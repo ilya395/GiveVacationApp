@@ -1,0 +1,19 @@
+.work-area {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.preloader {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    z-index: 111;
+    background-color: #fff;
+}
+.preloader .container .preloader-wrapper  {
+    display: block;
+    margin: 0 auto;
+}
