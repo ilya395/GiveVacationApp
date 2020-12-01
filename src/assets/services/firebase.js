@@ -32,7 +32,7 @@ class Firebase {
 
     // методы для работы с бд
     getDepartmentsRef = () => this.database.ref('/department/');
-    getUsersRef = () => this.database.ref('/user/');
+    getUsersRef = () => this.database.ref('/users/');
     getVacationsRef = () => this.database.ref('/vacations/');
 
     requestRef = (str) => this.database.ref(str);

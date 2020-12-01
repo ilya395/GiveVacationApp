@@ -10,9 +10,10 @@ import LoginContext from './assets/context/loginContext';
 
 function App() {
 
+  const { auth } = useContext(Firebase);
+
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(false);
-  const { auth } = useContext(Firebase);
   const [userEmail, setUserEmail] = useState('');
   const [thisUserData, setThisUserData] = useState(null);
 
