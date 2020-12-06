@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import cn from 'classnames';
-import s from './UserList.module.scss';
-import { Link } from 'react-router-dom';
+// import cn from 'classnames';
+// import s from './UserList.module.scss';
 import Firebase from '../../context/firebaseContext';
+import { Link } from 'react-router-dom';
 
-const UserList = (props) => {
+const DepartmentList = (props) => {
 
     const [allUsers, setAllUsers] = useState([]);
     const [allDepartments, setAllDepartments] = useState([]);
@@ -30,43 +30,42 @@ const UserList = (props) => {
 
     }, []); // allUsers, allDepartments, allVacations, login
 
-    const deleteUser = () => {
-        console.log('delete', id)
+    const deleteDepartment = (id) => {
         const arr = [];
-        const result = allUsers.filter(item => item.id !== id);
-        setAllUsers(result);
-        getUsersRef().set(result);        
+        const result = allDepartments.filter(item => item.id !== id);
+        setAllDepartments(result);
+        getDepartmentsRef().set(result);
     }
 
     return (
         <>
-            <h2>User List</h2>
+            <h2>Departament List</h2>
             <div>
                 <button>
-                    <Link to="user/new-user">
-                        Новый пользователь
+                    <Link to="department/new-department">
+                        Добавить отдел
                     </Link>
                 </button>
             </div>
             <div>
-                {allUsers.map(item => (
+                {allDepartments.map(item => (
                     <div key={item.id}>
                         <div>
-                            {`${item.name} ${item.surname}`}
+                            {item.name}
                         </div>
                         <div>
                             <button>
-                                <Link to={`/user/${item.id}`}>
+                                <Link to={`department/${item.id}`}>
                                     Редактировать
                                 </Link>
                             </button>
-                            <button onClick={() => deleteUser(item.id)}>Удалить</button>
+                            <button onClick={() => deleteDepartment(item.id)}>Удалить</button>
                         </div>
                     </div>    
-                ))}                
+                ))}
             </div>
         </>
     );
 }
 
-export default UserList;
+export default DepartmentList;

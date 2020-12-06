@@ -15,22 +15,33 @@ function callback(key) {
     console.log(key);
   }
 
-const Management = () => {
+const Management = (props) => {
 
     const [allUsers, setAllUsers] = useState([]);
     const [allDepartments, setAllDepartments] = useState([]);
     const [allVacations, setAllVacations] = useState([]);
 
     const [visibleModal, setVisibleModal] = useState(false);
-    const [childrenComponentForModal, setChildrenComponentForModal] = useState(UserForm);
+    const [changing, setChanging] = useState(null);
 
     const { login } = useContext(LoginContext);
-    console.log(login)
+    // console.log(login)
 
     const { getUsersRef, getDepartmentsRef, getVacationsRef } = useContext(Firebase);
 
+    const changeOrAddUser = (data) => {
+        console.log(data);
+    }
+
+    const jumpModal = () => {
+        setVisibleModal(!visibleModal);
+    }
+
     const changeUser = (id) => {
-        console.log('change', id)
+        console.log('change', id);
+        const result = allUsers.filter(item => item.id === id);
+        setChanging(result[0]);
+        jumpModal();
     }
     const deleteUser = (id) => {
         console.log('delete', id)
@@ -38,14 +49,14 @@ const Management = () => {
         const result = allUsers.filter(item => item.id !== id);
         setAllUsers(result);
         getUsersRef().set(result);
-        console.log(result);
     }
-    const clickOnUserContainer = (e) => {
-        if (e.target.dataset.object == 'add-user') {
+    const addUser = (e) => {
+        // if (e.target.dataset.object == 'add-user') {
             console.log('нужно вызвать модалку для создания юзера');
-            setChildrenComponentForModal(UserForm)
-            setVisibleModal(!visibleModal);
-        }
+            // setChildrenComponentForModal(UserForm)
+            setChanging(null);
+            jumpModal();
+        // }
     }
 
     useEffect(async () => {
@@ -71,7 +82,7 @@ const Management = () => {
             <Tabs defaultActiveKey="1" onChange={callback}>
                 <TabPane tab="Сотрудники" key="users">
                     хочу увидеть всех сотрудников
-                    <div onClick={clickOnUserContainer}>
+                    <div>
                         {allUsers.map(item => (
                             <div key={item.id}>
                                 <div>
@@ -83,8 +94,8 @@ const Management = () => {
                                 </div>
                             </div>    
                         ))}
-                        <button data-object="add-user">добавить</button>
                     </div>
+                    <button onClick={() => addUser()}>добавить</button>
                 </TabPane>
                 <TabPane tab="Отделы" key="departments">
                     хочу увидеть все отделы
@@ -95,8 +106,13 @@ const Management = () => {
             </Tabs>
             <CustomModal 
                 seeModal={visibleModal}
+                jumpModal={jumpModal}
             >
-                <UserForm />
+                <UserForm
+                    whoWillChange={changing}
+                    changeOrAdd={changeOrAddUser}
+                    resetUserForm={!visibleModal}
+                />
             </CustomModal>
         </>
     );

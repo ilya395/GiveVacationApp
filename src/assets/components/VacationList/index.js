@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import cn from 'classnames';
-import s from './UserList.module.scss';
-import { Link } from 'react-router-dom';
-import Firebase from '../../context/firebaseContext';
+// import cn from 'classnames';
+// import s from './UserList.module.scss';
 
-const UserList = (props) => {
+import Firebase from '../../context/firebaseContext';
+import { Link } from 'react-router-dom';
+
+const VacationList = (props) => {
 
     const [allUsers, setAllUsers] = useState([]);
     const [allDepartments, setAllDepartments] = useState([]);
@@ -30,43 +31,44 @@ const UserList = (props) => {
 
     }, []); // allUsers, allDepartments, allVacations, login
 
-    const deleteUser = () => {
+    // const {} = props;
+    const deleteVacation = (id) => {
         console.log('delete', id)
         const arr = [];
-        const result = allUsers.filter(item => item.id !== id);
-        setAllUsers(result);
-        getUsersRef().set(result);        
+        const result = allVacations.filter(item => item.id !== id);
+        setAllVacations(result);
+        getVacationsRef().set(result);
     }
 
     return (
         <>
-            <h2>User List</h2>
+            <h2>Vacation List</h2>
             <div>
                 <button>
-                    <Link to="user/new-user">
-                        Новый пользователь
+                    <Link to="vacation/new-vacation">
+                        Добавить отпуск
                     </Link>
                 </button>
             </div>
             <div>
-                {allUsers.map(item => (
+                {allVacations.map(item => (
                     <div key={item.id}>
                         <div>
-                            {`${item.name} ${item.surname}`}
+                            {item.user_id}
                         </div>
                         <div>
                             <button>
-                                <Link to={`/user/${item.id}`}>
+                                <Link to={`vacation/${item.id}`}>
                                     Редактировать
                                 </Link>
                             </button>
-                            <button onClick={() => deleteUser(item.id)}>Удалить</button>
+                            <button onClick={() => deleteVacation(item.id)}>Удалить</button>
                         </div>
                     </div>    
-                ))}                
+                ))}
             </div>
         </>
     );
 }
 
-export default UserList;
+export default VacationList;
