@@ -6,8 +6,8 @@ const DepartForm = (props) => {
     const { history } = props;
     const [id, setId] = useState(props.match.params.id);
     const [allDepartments, setAllDepartments] = useState([]);
-    const [thisDepartmentsName, setThisDepartmentsName] = useState('');
-    const [thisDepartmentsIndex, setThisDepartmentsIndex] = useState(0);
+    const [thisDepartmentName, setThisDepartmentName] = useState('');
+    const [thisDepartmentIndex, setThisDepartmentIndex] = useState(0);
     const { getDepartmentsRef } = useContext(Firebase);
 
     useEffect(async () => {
@@ -26,12 +26,12 @@ const DepartForm = (props) => {
                     console.log(res)
                     const dev = res.filter(item => item.id === +id);
                     console.log(dev)
-                    setThisDepartmentsName(dev[0].name);
-                    setThisDepartmentsIndex(dev[0].id);
+                    setThisDepartmentName(dev[0].name);
+                    setThisDepartmentIndex(dev[0].id);
                     console.log(dev[0].name);
                 } else {
-                    setThisDepartmentsName('введите название нового отдела');
-                    setThisDepartmentsIndex(new Date().getTime());
+                    setThisDepartmentName('введите название нового отдела');
+                    setThisDepartmentIndex(new Date().getTime());
                 }                
             })
             .catch(e => console.log(e));
@@ -39,24 +39,24 @@ const DepartForm = (props) => {
     }, []);
 
     const handleName = (event) => {
-        setThisDepartmentsName(event.target.value);
-        setThisDepartmentsIndex(event.target.dataset.index);
+        setThisDepartmentName(event.target.value);
+        setThisDepartmentIndex(event.target.dataset.index);
     }
 
     const submitForm = (event) => {
         event.preventDefault();
-        console.log(id, thisDepartmentsIndex);
-        const findResultIndex = allDepartments.findIndex(item => +item.id === +thisDepartmentsIndex);
+        console.log(id, thisDepartmentIndex);
+        const findResultIndex = allDepartments.findIndex(item => +item.id === +thisDepartmentIndex);
         console.log(allDepartments, findResultIndex);
         if (findResultIndex !== -1) { // есть совпадения
-            allDepartments[+findResultIndex].name = thisDepartmentsName;
+            allDepartments[+findResultIndex].name = thisDepartmentName;
             getDepartmentsRef()
                 .set(allDepartments)
                 .then(() => history.push('/departments'))
                 .catch(e => console.log(e))
         } else { // нет совпадений
             allDepartments.push({
-                name: thisDepartmentsName,
+                name: thisDepartmentName,
                 id: new Date().getTime(),
             });
             console.log(allDepartments)
@@ -69,12 +69,12 @@ const DepartForm = (props) => {
 
     return (
         <>
-            <h2>Depart Form</h2>
+            <h2>Department Form</h2>
             <div>
                 <form onSubmit={submitForm}>
                     <div>
                         <label htmlFor="name">Название отдела</label>
-                        <input type="text" id="name" name="name" data-index={thisDepartmentsIndex} defaultValue={thisDepartmentsName} onChange={handleName} />
+                        <input type="text" id="name" name="name" data-index={thisDepartmentIndex} defaultValue={thisDepartmentName} onChange={handleName} />
                     </div>
                     <div>
                         <button>
