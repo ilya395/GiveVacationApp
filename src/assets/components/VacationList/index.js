@@ -14,22 +14,57 @@ const VacationList = (props) => {
     const { getUsersRef, getDepartmentsRef, getVacationsRef } = useContext(Firebase);
 
     useEffect(async () => {
-        await getUsersRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllUsers(res));
+        if (allUsers.length == 0 && allDepartments.length == 0 && allVacations.length == 0) {
+            await getUsersRef()
+                .once('value')
+                .then(response => response.val())
+                .then(res => setAllUsers(res))
+                .catch(e => console.log(e))
+                .finally(() => console.log('сходили за юзерами', allUsers))
 
-        await getDepartmentsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllDepartments(res));
+            await getDepartmentsRef()
+                .once('value')
+                .then(response => response.val())
+                .then(res => setAllDepartments(res))
+                .catch(e => console.log(e))
+                .finally(() => console.log('сходили за отделами', allDepartments))
 
-        await getVacationsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllVacations(res));
+            await getVacationsRef()
+                .once('value')
+                .then(response => response.val())
+                .then(res => setAllVacations(res))
+                .catch(e => console.log(e))
+                .finally(() => console.log('сходили за отпусками', allVacations))
+        }
 
-    }, []); // allUsers, allDepartments, allVacations, login
+        // if (allUsers.length == 0) {
+        //     getUsersRef()
+        //         .once('value')
+        //         .then(response => response.val())
+        //         .then(res => setAllUsers(res))
+        //         .catch(e => console.log(e))
+        //         .finally(() => console.log('сходили за юзерами', allUsers));
+        // }
+
+        // if (allDepartments.length == 0) {
+        //     getDepartmentsRef()
+        //     .once('value')
+        //     .then(response => response.val())
+        //     .then(res => setAllDepartments(res))
+        //     .catch(e => console.log(e))
+        //     .finally(() => console.log('сходили за отделами', allDepartments))
+        // }
+        
+        // if (allVacations.length == 0) {
+        //     getVacationsRef()
+        //         .once('value')
+        //         .then(response => response.val())
+        //         .then(res => setAllVacations(res))
+        //         .catch(e => console.log(e))
+        //         .finally(() => console.log('сходили за отпусками', allVacations))
+        // }
+
+    }, [allUsers, allDepartments, allVacations]); // allUsers, allDepartments, allVacations, login
 
     // const {} = props;
     const deleteVacation = (id) => {
@@ -51,21 +86,33 @@ const VacationList = (props) => {
                 </button>
             </div>
             <div>
-                {allVacations.map(item => (
-                    <div key={item.id}>
-                        <div>
-                            {item.user_id}
-                        </div>
-                        <div>
-                            <button>
-                                <Link to={`vacation/${item.id}`}>
-                                    Редактировать
-                                </Link>
-                            </button>
-                            <button onClick={() => deleteVacation(item.id)}>Удалить</button>
-                        </div>
-                    </div>    
-                ))}
+                {allVacations.map(item => {
+
+                    const objectOfUser = allUsers.find(i => +item.user_id === +i.id);
+                    const fullName = `${objectOfUser.name} ${objectOfUser.surname}`;
+
+                    // try {
+
+                    // } catch (e) {
+                    //     console.log(e)
+                    // }
+
+                    return (
+                        <div key={item.id}>
+                            <div>
+                                {fullName}
+                            </div>
+                            <div>
+                                <button>
+                                    <Link to={`vacation/${item.id}`}>
+                                        Редактировать
+                                    </Link>
+                                </button>
+                                <button onClick={() => deleteVacation(item.id)}>Удалить</button>
+                            </div>
+                        </div> 
+                    );   
+                })}
             </div>
         </>
     );
