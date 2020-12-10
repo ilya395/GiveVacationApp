@@ -1,0 +1,19 @@
+.root {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.inner-elem {
+    position: absolute;
+    top: -20px;
+    bottom: -20px;
+    background-color: orange;
+
+    &.start {
+        left: 0;
+    }
+    &.end {
+        right: 0;
+    }
+}

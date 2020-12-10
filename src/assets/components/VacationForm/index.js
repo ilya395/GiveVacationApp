@@ -51,11 +51,11 @@ const VacationForm = (props) => {
                         
                         const startDate = vacation[0].vacation_start;
                         setVacationStartValue(startDate);
-                        setVacationStart(`${new Date(startDate).getFullYear()}-${(new Date(startDate).getMonth() + 1) > 9 ? (new Date(startDate).getMonth() + 1) : `0${new Date(startDate).getMonth() + 1}`}-${new Date(startDate).getDate()}`);
+                        setVacationStart(`${new Date(startDate).getFullYear()}-${(new Date(startDate).getMonth() + 1) > 9 ? (new Date(startDate).getMonth() + 1) : `0${new Date(startDate).getMonth() + 1}`}-${new Date(startDate).getDate() > 9 ? new Date(startDate).getDate() : `0${new Date(startDate).getDate()}`}`);
                         
                         const endDate = vacation[0].vacation_end;
                         setVacationEndValue(endDate);
-                        setVacationEnd(`${new Date(endDate).getFullYear()}-${(new Date(endDate).getMonth() + 1) > 9 ? (new Date(endDate).getMonth() + 1) : `0${new Date(endDate).getMonth() + 1}`}-${new Date(endDate).getDate()}`);
+                        setVacationEnd(`${new Date(endDate).getFullYear()}-${(new Date(endDate).getMonth() + 1) > 9 ? (new Date(endDate).getMonth() + 1) : `0${new Date(endDate).getMonth() + 1}`}-${new Date(endDate).getDate() > 9 ? new Date(endDate).getDate() : `0${new Date(endDate).getDate()}`}`);
                         
                         setThisVacationIndex(vacation[0].id);
 

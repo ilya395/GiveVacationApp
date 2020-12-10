@@ -30,7 +30,7 @@ const UserList = (props) => {
 
     }, []); // allUsers, allDepartments, allVacations, login
 
-    const deleteUser = () => {
+    const deleteUser = (id) => {
         console.log('delete', id)
         const arr = [];
         const result = allUsers.filter(item => item.id !== id);

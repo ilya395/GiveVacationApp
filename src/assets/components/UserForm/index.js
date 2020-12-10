@@ -26,12 +26,12 @@ const UserForm = (props) => {
         if (id !== 'new-user') {
 
           const user = res.find(item => +item.id === +id);
-
+          console.log(user, id)
           setThisUserName(user.name);
           setThisUserSurname(user.surname);
           setThisUserLogin(user.login);
           setThisUserRole(user.role);
-        }
+        } 
       })
       .catch(e => console.log(e))
       .finally(() => console.log('сходили за юзерами'));
@@ -55,6 +55,38 @@ const UserForm = (props) => {
 
   const submitForm = (event) => {
     event.preventDefault();
+
+    const findResultIndex = allUsers.findIndex(item => +item.id === +id);
+    if (findResultIndex !== -1) { // есть совпадения
+      allUsers[+findResultIndex].name = thisUserName;
+      allUsers[+findResultIndex].surname = thisUserSurname;
+      allUsers[+findResultIndex].login = thisUserLogin;
+      // allUsers[+findResultIndex].role = vacationStartValue;
+        if (thisUserName !== 0 && thisUserSurname !== 0 && thisUserLogin !== 0) {
+            getUsersRef()
+                .set(allUsers)
+                .then(() => history.push('/users'))
+                .catch(e => console.log(e));
+        } else {
+            alert('Ошибка в данных');
+        }
+    } else { // нет совпадений
+      allUsers.push({
+            name: thisUserName,
+            surname: thisUserSurname,
+            login: thisUserLogin,
+            id: new Date().getTime(),
+        });
+
+        if (thisUserName !== 0 && thisUserSurname !== 0 && thisUserLogin !== 0) {
+            getUsersRef()
+                .set(allUsers)
+                .then(() => history.push('/users'))
+                .catch(e => console.log(e));
+        } else {
+            alert('Ошибка в данных');
+        }
+    }
   }
 
     return (
@@ -74,10 +106,10 @@ const UserForm = (props) => {
                   <label htmlFor="login">Логин</label>
                   <input type="text" id="login" name="login" defaultValue={thisUserLogin} onChange={handleLogin} />
               </div>
-              <div>
+              {/* <div>
                   <label htmlFor="role">Статус(роль)</label>
                   <input type="text" id="role" name="role" defaultValue={thisUserRole} onChange={handleRole} />
-              </div>
+              </div> */}
               <div>
                   <button>
                       Отправить

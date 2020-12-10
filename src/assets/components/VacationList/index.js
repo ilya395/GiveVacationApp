@@ -14,21 +14,48 @@ const VacationList = (props) => {
     const { getUsersRef, getDepartmentsRef, getVacationsRef } = useContext(Firebase);
 
     useEffect(async () => {
-        if (allUsers.length == 0 && allDepartments.length == 0 && allVacations.length == 0) {
+        // if (allUsers.length == 0 && allDepartments.length == 0 && allVacations.length == 0) {
+        //     await getUsersRef()
+        //         .once('value')
+        //         .then(response => response.val())
+        //         .then(res => setAllUsers(res))
+        //         .catch(e => console.log(e))
+        //         .finally(() => console.log('сходили за юзерами', allUsers))
+
+        //     await getDepartmentsRef()
+        //         .once('value')
+        //         .then(response => response.val())
+        //         .then(res => setAllDepartments(res))
+        //         .catch(e => console.log(e))
+        //         .finally(() => console.log('сходили за отделами', allDepartments))
+
+        //     await getVacationsRef()
+        //         .once('value')
+        //         .then(response => response.val())
+        //         .then(res => setAllVacations(res))
+        //         .catch(e => console.log(e))
+        //         .finally(() => console.log('сходили за отпусками', allVacations))
+        // }
+
+        if (allUsers.length == 0) {
             await getUsersRef()
                 .once('value')
                 .then(response => response.val())
                 .then(res => setAllUsers(res))
                 .catch(e => console.log(e))
-                .finally(() => console.log('сходили за юзерами', allUsers))
+                .finally(() => console.log('сходили за юзерами', allUsers));
+        }
 
+        if (allDepartments.length == 0) {
             await getDepartmentsRef()
                 .once('value')
                 .then(response => response.val())
                 .then(res => setAllDepartments(res))
                 .catch(e => console.log(e))
                 .finally(() => console.log('сходили за отделами', allDepartments))
-
+        }
+        
+        if (allVacations.length == 0) {
             await getVacationsRef()
                 .once('value')
                 .then(response => response.val())
@@ -37,42 +64,23 @@ const VacationList = (props) => {
                 .finally(() => console.log('сходили за отпусками', allVacations))
         }
 
-        // if (allUsers.length == 0) {
-        //     getUsersRef()
-        //         .once('value')
-        //         .then(response => response.val())
-        //         .then(res => setAllUsers(res))
-        //         .catch(e => console.log(e))
-        //         .finally(() => console.log('сходили за юзерами', allUsers));
-        // }
-
-        // if (allDepartments.length == 0) {
-        //     getDepartmentsRef()
-        //     .once('value')
-        //     .then(response => response.val())
-        //     .then(res => setAllDepartments(res))
-        //     .catch(e => console.log(e))
-        //     .finally(() => console.log('сходили за отделами', allDepartments))
-        // }
-        
-        // if (allVacations.length == 0) {
-        //     getVacationsRef()
-        //         .once('value')
-        //         .then(response => response.val())
-        //         .then(res => setAllVacations(res))
-        //         .catch(e => console.log(e))
-        //         .finally(() => console.log('сходили за отпусками', allVacations))
-        // }
-
     }, [allUsers, allDepartments, allVacations]); // allUsers, allDepartments, allVacations, login
 
     // const {} = props;
     const deleteVacation = (id) => {
         console.log('delete', id)
         const arr = [];
-        const result = allVacations.filter(item => item.id !== id);
+        const result = allVacations.filter(item => +item.id !== +id);
         setAllVacations(result);
         getVacationsRef().set(result);
+    }
+
+    if (allVacations.length == 0) {
+        return (
+            <>
+                <h2>Нет отпусков</h2>
+            </>
+        );
     }
 
     return (
@@ -88,7 +96,8 @@ const VacationList = (props) => {
             <div>
                 {allVacations.map(item => {
 
-                    const objectOfUser = allUsers.find(i => +item.user_id === +i.id);
+                    const objectOfUser = allUsers.length > 0 ? allUsers.find(i => +item.user_id === +i.id) : {name: 'Получение имени ...', surname: 'Получение фамилии ...'};
+                    console.log(objectOfUser)
                     const fullName = `${objectOfUser.name} ${objectOfUser.surname}`;
 
                     // try {
