@@ -37,9 +37,8 @@ const MainLayout = ({children, ...props}) => {
             <LogoutButton logoutPlz={logoutPlz} />
           </div>
         </Header>
-        <Content style={{ padding: '0 50px' }}>
+        <Content style={{ padding: '0 50px', overflow: 'auto', }}>
           <div className="site-layout-content">
-            {/* <Component {...props} /> */}
             {children}
           </div>
         </Content>

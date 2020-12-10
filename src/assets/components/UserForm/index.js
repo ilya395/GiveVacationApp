@@ -4,7 +4,7 @@ import Firebase from '../../context/firebaseContext';
 const UserForm = (props) => {
 
   const { history } = props;
-  const { getVacationsRef, getUsersRef } = useContext(Firebase);
+  const { getVacationsRef, getUsersRef, getDepartmentsRef } = useContext(Firebase);
   const [id, setId] = useState(props.match.params.id);
   const [allUsers, setAllUsers] = useState([]);
   const [thisUserId, setThisUserId] = useState(0);
@@ -12,10 +12,11 @@ const UserForm = (props) => {
   const [thisUserSurname, setThisUserSurname] = useState('');
   const [thisUserLogin, setThisUserLogin] = useState('');
   const [thisUserRole, setThisUserRole] = useState('');
+  const [allDepartments, setAllDepartments] = useState([]);
+  const [thisUserDepartmentId, setThisUserDepartmentId] = useState(0);
 
-
-  useEffect(async () => {
-    await getUsersRef()
+  useEffect(() => {
+    getUsersRef()
       .once('value')
       .then(response => response.val())
       .then(res => {
@@ -24,18 +25,36 @@ const UserForm = (props) => {
       })
       .then(res => {
         if (id !== 'new-user') {
-
           const user = res.find(item => +item.id === +id);
           console.log(user, id)
           setThisUserName(user.name);
           setThisUserSurname(user.surname);
           setThisUserLogin(user.login);
           setThisUserRole(user.role);
+          setThisUserDepartmentId(user.department_id || null);
         } 
       })
       .catch(e => console.log(e))
       .finally(() => console.log('сходили за юзерами'));
   }, [id]);
+
+  useEffect(() => {
+    getDepartmentsRef()
+      .once('value')
+      .then(response => response.val())
+      .then(res => {
+        setAllDepartments(res)
+        return res;
+      })
+      .then(res => {
+        if (thisUserDepartmentId === 0 || thisUserDepartmentId === null) {
+          console.log(res[0].name)
+          setThisUserDepartmentId(res[0].id);
+        }
+      })
+      .catch(e => console.log(e))
+      .finally(() => console.log('сходили за отделами', allDepartments));
+  }, []);
 
   const handleName = (event) => {
     setThisUserName(event.target.value);
@@ -53,6 +72,11 @@ const UserForm = (props) => {
     setThisUserRole(event.target.value);
   }
 
+  const handleChangeDepartment = (event) => {
+    console.log(event.target.value)
+    setThisUserDepartmentId(event.target.value);
+  }
+
   const submitForm = (event) => {
     event.preventDefault();
 
@@ -61,8 +85,9 @@ const UserForm = (props) => {
       allUsers[+findResultIndex].name = thisUserName;
       allUsers[+findResultIndex].surname = thisUserSurname;
       allUsers[+findResultIndex].login = thisUserLogin;
+      allUsers[+findResultIndex].department_id = thisUserDepartmentId;
       // allUsers[+findResultIndex].role = vacationStartValue;
-        if (thisUserName !== 0 && thisUserSurname !== 0 && thisUserLogin !== 0) {
+        if (thisUserName !== '' && thisUserSurname !== '' && thisUserLogin !== '' && thisUserDepartmentId !== '') {
             getUsersRef()
                 .set(allUsers)
                 .then(() => history.push('/users'))
@@ -76,9 +101,10 @@ const UserForm = (props) => {
             surname: thisUserSurname,
             login: thisUserLogin,
             id: new Date().getTime(),
+            department_id: thisUserDepartmentId,
         });
 
-        if (thisUserName !== 0 && thisUserSurname !== 0 && thisUserLogin !== 0) {
+        if (thisUserName !== '' && thisUserSurname !== '' && thisUserLogin !== '' && thisUserDepartmentId !== '') {
             getUsersRef()
                 .set(allUsers)
                 .then(() => history.push('/users'))
@@ -105,6 +131,21 @@ const UserForm = (props) => {
               <div>
                   <label htmlFor="login">Логин</label>
                   <input type="text" id="login" name="login" defaultValue={thisUserLogin} onChange={handleLogin} />
+              </div>
+              <div>
+                  <label htmlFor="departament">Отдел</label>
+                  <select
+                    id="departament" 
+                    name="departament"
+                    value={+thisUserDepartmentId}
+                    onChange={handleChangeDepartment}
+                  >
+                    {
+                      allDepartments.map(item => (
+                        <option key={+item.id} value={+item.id}>{item.name}</option>
+                      ))
+                    }
+                  </select>
               </div>
               {/* <div>
                   <label htmlFor="role">Статус(роль)</label>

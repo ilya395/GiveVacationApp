@@ -46,3 +46,7 @@ $colimn_width: calc( ( 100% - 150px )/12 );
 .content-title-block__elem {
     @include elem( $colimn_width );
 }
+
+.page-title {
+    margin-bottom: 20px;
+}

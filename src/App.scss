@@ -47,8 +47,15 @@ table {
 }
 /* /reset */
 
+html {
+	font-family: 'Montserrat', sans-serif;
+	font-size: 62.5%;
+	font-weight: normal;
+	font-style: normal;
+}
+
 body {
-    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6rem;
 }
 
 //
@@ -62,4 +69,4 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-  }
+}

@@ -1,0 +1,84 @@
+.page-title {
+    margin-bottom: 20px;
+}
+
+$btn_color_default: #1890ff;
+$color_add_new: #a0d911;
+$white: #ffffff;
+$btn_color_delete: #ff4d4f; // #f5222d;
+
+.button-new-object {
+    display: inline-block;
+    padding: 10px 20px 8px 20px;
+    border-radius: 2px;
+    height: 40px;
+    border: 1px solid $btn_color_default;
+    background-color: transparent;
+    outline: none;
+    text-align: center;
+    vertical-align: middle;
+    color: $btn_color_default;
+}
+
+.button-new-object__text {
+    color: $btn_color_default;
+    text-decoration: none;
+    font-size: 1.6rem;
+}
+
+.wrap {
+    margin-bottom: 40px;
+}
+
+.one-row {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.one-row__number {
+    width: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.one-row__elem {
+    flex-basis: calc((100% - 20px)/3);
+    flex-grow: 0;
+    flex-shrink: 1;
+    display: flex;
+    align-items: center;
+}
+
+.one-row__buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.one-row__redaction {
+    display: inline-block;
+    padding: 10px 20px 8px 20px;
+    border-radius: 2px;
+    height: 40px;
+    border: 1px solid $btn_color_default;
+    background-color: $btn_color_default;
+    outline: none;
+    text-align: center;
+    vertical-align: middle;
+    color: $white;
+}
+
+.one-row__delete {
+    display: inline-block;
+    padding: 10px 20px 8px 20px;
+    border-radius: 2px;
+    height: 40px;
+    border: 1px solid $btn_color_delete;
+    background-color: $btn_color_delete;
+    outline: none;
+    text-align: center;
+    vertical-align: middle;
+    color: $white;   
+}
