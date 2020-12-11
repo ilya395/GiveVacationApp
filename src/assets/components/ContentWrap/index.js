@@ -144,7 +144,7 @@ const ContentWrap = (props) => {
 
     return (
         <>
-            <h2 className={cn(s['page-title'])}>Рассписание, дорогой(-ая)!</h2>
+            <h2 className={cn(s['page-title'])}>Расписание, дорогой(-ая)!</h2>
             <div>
                 <div className={cn(s['content-title-block'])}>
                     <div className={cn(s['content-title-block__start-elem'])}>

@@ -3,13 +3,15 @@
 }
 
 $btn_color_default: #1890ff;
+$btn_color_default_with_hover: #69c0ff;
 $color_add_new: #a0d911;
 $white: #ffffff;
 $btn_color_delete: #ff4d4f; // #f5222d;
+$btn_color_delete_with_hover: #ff7875; //rgba(255, 77, 79, .5);
 
 .button-new-object {
     display: inline-block;
-    padding: 10px 20px 8px 20px;
+    padding: 10px 20px 10px 20px;
     border-radius: 2px;
     height: 40px;
     border: 1px solid $btn_color_default;
@@ -28,6 +30,13 @@ $btn_color_delete: #ff4d4f; // #f5222d;
 
 .wrap {
     margin-bottom: 40px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.wrap__select {
+    min-width: 305px;
 }
 
 .one-row {
@@ -68,6 +77,12 @@ $btn_color_delete: #ff4d4f; // #f5222d;
     text-align: center;
     vertical-align: middle;
     color: $white;
+
+    &:hover {
+        color: $white;
+        background-color: $btn_color_default_with_hover;
+        border-color: $btn_color_default_with_hover;
+    }
 }
 
 .one-row__delete {
@@ -80,5 +95,12 @@ $btn_color_delete: #ff4d4f; // #f5222d;
     outline: none;
     text-align: center;
     vertical-align: middle;
-    color: $white;   
+    color: $white; 
+    cursor: pointer;
+    
+    &:hover {
+        color: $white;
+        background-color: $btn_color_delete_with_hover;
+        border-color: $btn_color_delete_with_hover;        
+    }
 }

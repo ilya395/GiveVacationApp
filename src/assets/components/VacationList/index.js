@@ -4,6 +4,7 @@ import s from './VacationList.module.scss';
 
 import Firebase from '../../context/firebaseContext';
 import { Link } from 'react-router-dom';
+import SelectList from '../SelectList';
 
 const VacationList = (props) => {
 
@@ -47,6 +48,10 @@ const VacationList = (props) => {
         getVacationsRef().set(result);
     }
 
+    const chooseDepartment = (id) => {
+        console.log(id)
+    }
+
     if (allVacations.length == 0) {
         return (
             <>
@@ -59,9 +64,20 @@ const VacationList = (props) => {
         <>
             <h2 className={cn(s['page-title'])}>Список отпусков</h2>
             <div className={cn(s['wrap'])}>
-                <Link to="vacation/new-vacation" className={cn(s['button-new-object'], s['.button-new-object__text'])}>
-                    Добавить отпуск
-                </Link>
+                <div className={cn(s['wrap__add-vacation'])}>
+                    <Link to="vacation/new-vacation" className={cn(s['button-new-object'], s['.button-new-object__text'])}>
+                        Добавить отпуск
+                    </Link>
+                </div>
+                <div className={cn(s['wrap__select'])}>
+                    <SelectList
+                        identificate={'selectDepartmentInVacationList'}
+                        title={'Выберите отдел'}
+                        defaultValue={allDepartments[0].id} 
+                        handleFunction={chooseDepartment} 
+                        data={allDepartments}
+                    />
+                </div>
             </div>
             <div>
                 {allVacations.map((item, index) => {
