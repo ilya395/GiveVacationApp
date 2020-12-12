@@ -35,8 +35,16 @@ $btn_color_delete_with_hover: #ff7875; //rgba(255, 77, 79, .5);
     justify-content: space-between;
 }
 
+.wrap__manage {
+    display: flex;
+}
+
 .wrap__select {
     min-width: 305px;
+}
+
+.wrap__year {
+    min-width: 100px;
 }
 
 .one-row {

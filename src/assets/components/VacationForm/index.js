@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Firebase from '../../context/firebaseContext';
 
+import cn from 'classnames';
+import s from './VacationForm.module.scss';
+import SelectList from '../SelectList';
+
 const VacationForm = (props) => {
     const { history } = props;
     const { getVacationsRef, getUsersRef } = useContext(Firebase);
@@ -15,61 +19,57 @@ const VacationForm = (props) => {
     const [vacationStartValue, setVacationStartValue] = useState(0);
     const [vacationEndValue, setVacationEndValue] = useState(0);
     
+    useEffect(() => {
+        getUsersRef()
+            .once('value')
+            .then(response => response.val())
+            .then(res => {
+                setAllUsers(res);
+            })
+            .catch(e => console.log(e))
+            .finally(() => console.log('сходили за юзерами'));
+    }, []);
+    useEffect(() => {
+        getVacationsRef()
+            .once('value')
+            .then(response => response.val())
+            .then(res => {
+                if (res == null) {
+                    res = [];
+                }
+                setAllVacations(res);
+                return res;
+            })
+            .then((res) => {
+                console.log(id)
+                if (id !== 'new-vacation' && id !== 0) {
 
-    useEffect(async () => {
+                    const vacation = res.filter(item => item.id === +id);
 
-        if (allUsers.length == 0) {
-            await getUsersRef()
-                .once('value')
-                .then(response => response.val())
-                .then(res => {
-                    setAllUsers(res);
-                })
-                .catch(e => console.log(e))
-                .finally(() => console.log('сходили за юзерами'));
-        }
-        if (allVacations.length == 0 && allUsers.length != 0) {
-            await getVacationsRef()
-                .once('value')
-                .then(response => response.val())
-                .then(res => {
-                    if (res == null) {
-                        res = [];
-                    }
-                    setAllVacations(res);
-                    return res;
-                })
-                .then((res) => {
-                    console.log(id)
-                    if (id !== 'new-vacation' && id !== 0) {
+                    const objectOfVacationer = allUsers.find(item => +item.id === +vacation[0].user_id);
 
-                        const vacation = res.filter(item => item.id === +id);
+                    setThisVacationName(`${objectOfVacationer.name} ${objectOfVacationer.surname}`);
+                    
+                    const startDate = vacation[0].vacation_start;
+                    setVacationStartValue(startDate);
+                    setVacationStart(`${new Date(startDate).getFullYear()}-${(new Date(startDate).getMonth() + 1) > 9 ? (new Date(startDate).getMonth() + 1) : `0${new Date(startDate).getMonth() + 1}`}-${new Date(startDate).getDate() > 9 ? new Date(startDate).getDate() : `0${new Date(startDate).getDate()}`}`);
+                    
+                    const endDate = vacation[0].vacation_end;
+                    setVacationEndValue(endDate);
+                    setVacationEnd(`${new Date(endDate).getFullYear()}-${(new Date(endDate).getMonth() + 1) > 9 ? (new Date(endDate).getMonth() + 1) : `0${new Date(endDate).getMonth() + 1}`}-${new Date(endDate).getDate() > 9 ? new Date(endDate).getDate() : `0${new Date(endDate).getDate()}`}`);
+                    
+                    setThisVacationIndex(vacation[0].id);
 
-                        const objectOfVacationer = allUsers.find(item => +item.id === +vacation[0].user_id);
-
-                        setThisVacationName(`${objectOfVacationer.name} ${objectOfVacationer.surname}`);
-                        
-                        const startDate = vacation[0].vacation_start;
-                        setVacationStartValue(startDate);
-                        setVacationStart(`${new Date(startDate).getFullYear()}-${(new Date(startDate).getMonth() + 1) > 9 ? (new Date(startDate).getMonth() + 1) : `0${new Date(startDate).getMonth() + 1}`}-${new Date(startDate).getDate() > 9 ? new Date(startDate).getDate() : `0${new Date(startDate).getDate()}`}`);
-                        
-                        const endDate = vacation[0].vacation_end;
-                        setVacationEndValue(endDate);
-                        setVacationEnd(`${new Date(endDate).getFullYear()}-${(new Date(endDate).getMonth() + 1) > 9 ? (new Date(endDate).getMonth() + 1) : `0${new Date(endDate).getMonth() + 1}`}-${new Date(endDate).getDate() > 9 ? new Date(endDate).getDate() : `0${new Date(endDate).getDate()}`}`);
-                        
-                        setThisVacationIndex(vacation[0].id);
-
-                        setThisUserId(+objectOfVacationer.id);
-                    } else {
-                        setThisVacationName('Имя нового отпускника');
-                        setThisVacationIndex(new Date().getTime());
-                        setThisUserId(allUsers[0].id);
-                    }                
-                })
-                .catch(e => console.log(e))
-                .finally(() => console.log('сходили за отпусками', allVacations));
-        } 
-    }, [allUsers, allVacations]);
+                    setThisUserId(+objectOfVacationer.id);
+                } else {
+                    setThisVacationName('Имя нового отпускника');
+                    setThisVacationIndex(new Date().getTime());
+                    allUsers[0] ? setThisUserId(allUsers[0].id) : setThisUserId(0);
+                }                
+            })
+            .catch(e => console.log(e))
+            .finally(() => console.log('сходили за отпусками', allVacations));
+    }, [allUsers]);
 
     const handleChangeName = (event) => {
         setThisUserId(event.target.value);
@@ -122,20 +122,22 @@ const VacationForm = (props) => {
 
     return (
         <>
-            <h2>Vacation Form {id}</h2>
+            <h2 className={cn(s['page-title'])}>{id === 'new-vacation' ? 'Новый отпуск' : 'Отпуск для пользователя'}</h2>
             <div>
                 <form 
                     onSubmit={submitForm}
+                    className={cn(s.form)}
                 >
-                    <div>
-                        <label htmlFor="user">
-                            Пользователь
+                    <div className={cn(s['form-field'], s['form-field__select-wrap'])}>
+                        <label htmlFor="user" className={cn(s['select-label'])}>
+                            Пользователь:
                         </label>
                         <select
                             id="user"
                             name="user"
                             value={+thisUserId}
                             onChange={handleChangeName}
+                            className={cn(s['select-element'])}
                         >
                             {allUsers.map((item) => {
                                 const fullName = `${item.name} ${item.surname}`;
@@ -145,9 +147,9 @@ const VacationForm = (props) => {
                             })}
                         </select>
                     </div>
-                    <div>
-                        <label htmlFor="vacation_start">
-                            Начало отпускного периода
+                    <div className={cn(s['form-field'], s['form-field__input-date-wrap'])}>
+                        <label htmlFor="vacation_start" className={cn(s['select-label'])}>
+                            Начало отпускного периода:
                         </label>
                         <input
                             type="date"
@@ -155,11 +157,12 @@ const VacationForm = (props) => {
                             name="vacation_start"
                             value={vacationStart}
                             onChange={handleChangeVacationStart}
+                            className={cn(s['date-input'])}
                         />
                     </div>
-                    <div>
-                        <label htmlFor="vacation_end">
-                            Конец отпускного периода
+                    <div className={cn(s['form-field'], s['form-field__input-date-wrap'])}>
+                        <label htmlFor="vacation_end" className={cn(s['select-label'])}>
+                            Конец отпускного периода:
                         </label>
                         <input
                             type="date"
@@ -167,10 +170,11 @@ const VacationForm = (props) => {
                             name="vacation_end"
                             value={vacationEnd}
                             onChange={handleChangeVacationEnd}
+                            className={cn(s['date-input'])}
                         />
                     </div>
-                    <div>
-                        <button>
+                    <div className={cn(s['form-field'])}>
+                        <button className={cn(s['submit-button'])}>
                             Отправить
                         </button>
                     </div>
