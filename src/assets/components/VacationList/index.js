@@ -24,7 +24,7 @@ const VacationList = (props) => {
             .then(response => response.val())
             .then(res => setAllYears(res))
             .catch(e => console.log(e))
-            .finally(() => console.log('сходили за городами'));        
+            .finally(() => console.log('сходили за годами'));        
     }, []);
     useEffect(() => {
         getUsersRef()

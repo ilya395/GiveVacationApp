@@ -4,12 +4,10 @@ import s from './ContentWrap.module.scss';
 
 import Firebase from '../../context/firebaseContext';
 import Row from '../Row';
-import { months } from '../../services/constants';
+import { months, ALL_USERS_FROM_ALL_DEPARTMENTS_ID } from '../../services/constants';
 import SelectList from '../SelectList';
 
 const ContentWrap = (props) => {
-
-    const ALL_USERS_FROM_ALL_DEPARTMENTS_ID = 99999;
 
     const [allUsers, setAllUsers] = useState([]);
     const [allDepartments, setAllDepartments] = useState([]);

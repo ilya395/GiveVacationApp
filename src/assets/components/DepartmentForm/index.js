@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import Firebase from '../../context/firebaseContext';
 
+import cn from 'classnames';
+import s from './DepartmentForm.module.scss';
+
 const DepartForm = (props) => {
     // const id = props.match.params.id;
     const { history } = props;
@@ -10,9 +13,9 @@ const DepartForm = (props) => {
     const [thisDepartmentIndex, setThisDepartmentIndex] = useState(0);
     const { getDepartmentsRef } = useContext(Firebase);
 
-    useEffect(async () => {
+    useEffect(() => {
 
-        await getDepartmentsRef()
+        getDepartmentsRef()
             .once('value')
             .then(response => response.val())
             .then(res => {
@@ -30,7 +33,7 @@ const DepartForm = (props) => {
                     setThisDepartmentIndex(dev[0].id);
                     console.log(dev[0].name);
                 } else {
-                    setThisDepartmentName('введите название нового отдела');
+                    setThisDepartmentName('');
                     setThisDepartmentIndex(new Date().getTime());
                 }                
             })
@@ -69,15 +72,34 @@ const DepartForm = (props) => {
 
     return (
         <>
-            <h2>Department Form</h2>
+            <h2 className={cn(s['page-title'])}>{id === 'new-department' ? 'Новый отдел' : 'Редактировать отдел'}</h2>
             <div>
-                <form onSubmit={submitForm}>
-                    <div>
-                        <label htmlFor="name">Название отдела</label>
-                        <input type="text" id="name" name="name" data-index={thisDepartmentIndex} defaultValue={thisDepartmentName} onChange={handleName} />
+                <form 
+                    onSubmit={submitForm}
+                    className={cn(s.form)}
+                >
+                    <div
+                        className={cn(s['form-field'], s['form-field__select-wrap'])}
+                    >
+                        <label
+                            htmlFor="name"
+                            className={cn(s['select-label'])}
+                        >
+                            Название отдела:
+                        </label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            data-index={thisDepartmentIndex} 
+                            defaultValue={thisDepartmentName}
+                            placeholder={thisDepartmentName}
+                            onChange={handleName}
+                            className={cn(s['input-elem'])}
+                        />
                     </div>
-                    <div>
-                        <button>
+                    <div className={cn(s['form-field'])}>
+                        <button className={cn(s['submit-button'])}>
                             Отправить
                         </button>
                     </div>
