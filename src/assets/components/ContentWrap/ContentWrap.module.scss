@@ -50,3 +50,17 @@ $colimn_width: calc( ( 100% - 150px )/12 );
 .page-title {
     margin-bottom: 20px;
 }
+
+.wrap__manage {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.wrap__select {
+    min-width: 305px;
+}
+
+.wrap__year {
+    min-width: 100px;
+}

@@ -5,48 +5,31 @@ import s from './ContentWrap.module.scss';
 import Firebase from '../../context/firebaseContext';
 import Row from '../Row';
 import { months } from '../../services/constants';
+import SelectList from '../SelectList';
 
 const ContentWrap = (props) => {
+
+    const ALL_USERS_FROM_ALL_DEPARTMENTS_ID = 99999;
 
     const [allUsers, setAllUsers] = useState([]);
     const [allDepartments, setAllDepartments] = useState([]);
     const [allVacations, setAllVacations] = useState([]);
     const [bigData, setBigData] = useState([]);
     const [defaultYear, setDefaultYear] = useState(2021);
+    const [thisDepartmentId, setThisDepartmentId] = useState(0);
+    const [allYears, setAllYears] = useState([]);
+    const [thisYear, setThisYear] = useState(new Date().getFullYear());
 
-    const { getUsersRef, getDepartmentsRef, getVacationsRef } = useContext(Firebase);
+    const { getUsersRef, getDepartmentsRef, getVacationsRef, getYearsRef } = useContext(Firebase);
 
-    // useEffect(async () => {
-
-    //     if (allUsers.length == 0) {
-    //         await getUsersRef()
-    //             .once('value')
-    //             .then(response => response.val())
-    //             .then(res => setAllUsers(res))
-    //             .catch(e => console.log(e))
-    //             .finally(() => console.log('сходили за юзерами', allUsers));
-    //     }
-
-    //     if (allDepartments.length == 0) {
-    //         await getDepartmentsRef()
-    //             .once('value')
-    //             .then(response => response.val())
-    //             .then(res => setAllDepartments(res))
-    //             .catch(e => console.log(e))
-    //             .finally(() => console.log('сходили за отделами', allDepartments));
-    //     }
-        
-    //     if (allVacations.length == 0) {
-    //         await getVacationsRef()
-    //             .once('value')
-    //             .then(response => response.val())
-    //             .then(res => setAllVacations(res))
-    //             .catch(e => console.log(e))
-    //             .finally(() => console.log('сходили за отпусками', allVacations))
-    //     }
-
-    // }, [allUsers, allDepartments, allVacations]); // allUsers, allDepartments, allVacations, login
-
+    useEffect(() => {
+        getYearsRef()
+            .once('value')
+            .then(response => response.val())
+            .then(res => setAllYears(res))
+            .catch(e => console.log(e))
+            .finally(() => console.log('сходили за городами'));        
+    }, []);
     useEffect(() => {
         getUsersRef()
             .once('value')
@@ -59,7 +42,14 @@ const ContentWrap = (props) => {
         getDepartmentsRef()
             .once('value')
             .then(response => response.val())
-            .then(res => setAllDepartments(res))
+            .then(res => {
+                res.unshift({
+                    id: ALL_USERS_FROM_ALL_DEPARTMENTS_ID,
+                    name: 'Все'
+                });
+                setAllDepartments(res);
+                setThisDepartmentId(res[0].id);
+            })
             .catch(e => console.log(e))
             .finally(() => console.log('сходили за отделами', allDepartments));
     }, []);
@@ -72,8 +62,9 @@ const ContentWrap = (props) => {
             .finally(() => console.log('сходили за отпусками', allVacations));
     }, []);
     useEffect(() => {
-        const data = allUsers.map(item => {
-            const vacations = allVacations.filter(i => +i.user_id === +item.id);
+        const users = thisDepartmentId === ALL_USERS_FROM_ALL_DEPARTMENTS_ID ? allUsers : allUsers.filter(item => +item.department_id === +thisDepartmentId);
+        const data = users.map(item => {
+            const vacations = allVacations.filter(i => +i.user_id === +item.id && new Date(+i.vacation_start).getFullYear() === thisYear);
             const simpleViewOfVacations = [];
             vacations.forEach(item => {
                 const startDateStamp = item.vacation_start;
@@ -140,11 +131,39 @@ const ContentWrap = (props) => {
             return result;
         });
         setBigData(data);
-    }, [allUsers, allVacations, allDepartments])
+    }, [allUsers, allVacations, allDepartments, thisYear, thisDepartmentId]);
+
+    const chooseDepartment = (id) => {
+        setThisDepartmentId(+id);
+    }
+
+    const chooseYear = (id) => {
+        setThisYear(+id);
+    }
 
     return (
         <>
             <h2 className={cn(s['page-title'])}>Расписание, дорогой(-ая)!</h2>
+            <div className={cn(s['wrap__manage'])}>
+                <div className={cn(s['wrap__year'])}>
+                    <SelectList
+                        identificate={'selectYear'}
+                        title={'Выберите год'}
+                        defaultValue={new Date().getFullYear()} 
+                        handleFunction={chooseYear} 
+                        data={allYears}
+                    />                   
+                </div>
+                <div className={cn(s['wrap__select'])}>
+                    <SelectList
+                        identificate={'selectDepartmentOnMainPage'}
+                        title={'Выберите отдел'}
+                        defaultValue={thisDepartmentId} 
+                        handleFunction={chooseDepartment} 
+                        data={allDepartments}
+                    />
+                </div>
+            </div>
             <div>
                 <div className={cn(s['content-title-block'])}>
                     <div className={cn(s['content-title-block__start-elem'])}>
