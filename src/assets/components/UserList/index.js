@@ -10,11 +10,10 @@ const UserList = (props) => {
 
     const [allUsers, setAllUsers] = useState([]);
     const [allDepartments, setAllDepartments] = useState([]);
-    const [allVacations, setAllVacations] = useState([]);
     const [thisDepartmentId, setThisDepartmentId] = useState(0);
     const [choosedUsers, setChoosedUsers] = useState([]);
 
-    const { getUsersRef, getDepartmentsRef, getVacationsRef } = useContext(Firebase);
+    const { getUsersRef, getDepartmentsRef } = useContext(Firebase);
 
     useEffect(() => {
         getUsersRef()
@@ -35,13 +34,6 @@ const UserList = (props) => {
                 setAllDepartments(res);
                 setThisDepartmentId(res[0].id);
             })
-            .catch(e => console.log(e));
-    }, []);
-    useEffect(() => {
-        getVacationsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllVacations(res))
             .catch(e => console.log(e));
     }, []);
 

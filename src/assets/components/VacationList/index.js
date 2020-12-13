@@ -6,7 +6,13 @@ import Firebase from '../../context/firebaseContext';
 import { Link } from 'react-router-dom';
 import SelectList from '../SelectList';
 
+import loginContext from '../../context/loginContext';
+
 const VacationList = (props) => {
+
+    const { login } =  useContext(loginContext);
+
+    console.log(login);
 
     const [allYears, setAllYears] = useState([]);
     const [thisYear, setThisYear] = useState(new Date().getFullYear());

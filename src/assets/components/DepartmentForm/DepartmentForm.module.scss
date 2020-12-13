@@ -2,6 +2,8 @@
     margin-bottom: 20px;
 }
 
+$input_width: 320px;
+
 .form {
     width: 400px;
 }
@@ -11,12 +13,11 @@
 }
 
 .form-field__select-wrap {
-    width: 300px;
+    width: $input_width;
 }
 
 $default_color: #1890ff;
 $white: #ffffff;
-$input_width: 200px;
 
 .input-elem {
     display: block;

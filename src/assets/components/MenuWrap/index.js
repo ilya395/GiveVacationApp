@@ -8,20 +8,21 @@ const MenuWrap = () => {
 
     return (
         <>
-          <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
+          <Menu 
+            theme="dark" 
+            mode="horizontal" 
+            // defaultSelectedKeys={['1']}
+          >
             <Menu.Item key="1">
               <NavLink to={routesConfig.home.url}>{routesConfig.home.title}</NavLink>
             </Menu.Item>
             <Menu.Item key="2">
-                <NavLink to="/manage">Настройки</NavLink>
-            </Menu.Item>
-            <Menu.Item key="3">
               <NavLink to={routesConfig.users.url}>{routesConfig.users.title}</NavLink>
             </Menu.Item>
-            <Menu.Item key="4">
+            <Menu.Item key="3">
               <NavLink to={routesConfig.vacations.url}>{routesConfig.vacations.title}</NavLink>
             </Menu.Item>
-            <Menu.Item key="5">
+            <Menu.Item key="4">
               <NavLink to={routesConfig.departments.url}>{routesConfig.departments.title}</NavLink>
             </Menu.Item>
           </Menu>

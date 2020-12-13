@@ -10,7 +10,7 @@ import LoginContext from './assets/context/loginContext';
 
 function App() {
 
-  const { auth } = useContext(Firebase);
+  const { auth, getUsersRef } = useContext(Firebase);
 
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(false);
@@ -42,7 +42,16 @@ function App() {
           setUserId(user.uid);
           localStorage.setItem('userId', JSON.stringify(user.uid));
           setUserEmail(user.email);
-          // console.log(localStorage.getItem('userId'));
+
+          getUsersRef()
+            .once('value')
+            .then(response => response.val())
+            .then(res => {
+              const newUser = res.find(item => item.login === user.email);
+              setThisUserData(newUser);
+            })
+            .catch(e => console.log(e))
+            .finally(() => console.log('сходили за юзерами'));
         } else {
           setUserId(false);
           localStorage.removeItem('userId');
@@ -51,9 +60,9 @@ function App() {
       });
     }
     
-  }, [userId, auth, userEmail]); 
+  }, []); 
   
-  const routes = useRoutes(userId);
+  const routes = useRoutes({login: userEmail, userData: thisUserData});
 
   if (loading) {
     return (

@@ -31,6 +31,7 @@ class Firebase {
     signWithEmail = (email, password) => this.auth.signInWithEmailAndPassword(email, password);
 
     // методы для работы с бд
+    getRolesRef = () => this.database.ref('/roles/');
     getYearsRef = () => this.database.ref('/years/');
     getDepartmentsRef = () => this.database.ref('/departments/');
     getUsersRef = () => this.database.ref('/users/');

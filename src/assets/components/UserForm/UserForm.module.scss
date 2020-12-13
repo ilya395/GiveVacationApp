@@ -2,7 +2,7 @@
     margin-bottom: 20px;
 }
 
-$input_width: 320px;
+$input_width: 320px; // 200px;
 
 .form {
     width: 400px;
@@ -13,7 +13,7 @@ $input_width: 320px;
 }
 
 .form-field__select-wrap {
-    width: $input_width;
+    width: $input_width; // 200px;
 }
 
 .select-label {
@@ -22,6 +22,7 @@ $input_width: 320px;
 
 $default_color: #1890ff;
 $white: #ffffff;
+
 .select-element {
     display: block;
     color: $default_color;
@@ -46,8 +47,21 @@ $white: #ffffff;
     background-size: .65em auto, 100%;
 }
 
+.input-elem {
+    display: block;
+    color: $default_color;
+    padding: 10px 20px 10px 20px;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box; 
+    margin: 7px 0 0 0; 
+    border-radius: 2px;
+    border: solid 1px $default_color;
+    background-color: $white;     
+}
+
 .form-field__input-date-wrap {
-    width: $input_width;
+    width: 300px;
 }
 .date-input {
     display: block;

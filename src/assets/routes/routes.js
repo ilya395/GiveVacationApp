@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout/MainLayout';
 import AuthLayout from '../layouts/AuthLayout/AuthLayout';
@@ -6,15 +6,17 @@ import AuthLayout from '../layouts/AuthLayout/AuthLayout';
 import { PrivateRoute } from './privateRoute';
 import routesConfig from './manageToRoutes';
 import ContentWrap from '../components/ContentWrap';
-import Management from '../components/Management';
 import UserList from '../components/UserList';
 import DepartmentList from '../components/DepartmentList';
 import DepartmentForm from '../components/DepartmentForm';
 import VacationList from '../components/VacationList';
 import VacationForm from '../components/VacationForm';
 import UserForm from '../components/UserForm';
+// import loginContext from '../context/loginContext';
 
-const useRoutes = (isAuthenticated) => {
+const useRoutes = (props) => {
+
+    console.log(props);
 
     return (
         <Switch>
@@ -27,11 +29,6 @@ const useRoutes = (isAuthenticated) => {
                 }}
             >
             </Route>
-            <PrivateRoute 
-                path="/manage"
-                exact
-                component={Management}
-            />
             <PrivateRoute 
                 path={routesConfig.users.url}
                 component={UserList}

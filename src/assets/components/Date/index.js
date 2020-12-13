@@ -5,9 +5,9 @@ import s from './Date.module.scss';
 const Date = (props) => {
 
     const { data, name } = props;
-    if (data) {
-        console.log(`${name}: `,data)
-    }
+    // if (data) {
+    //     console.log(`${name}: `,data)
+    // }
 
     return (
         <>

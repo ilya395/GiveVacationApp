@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import Firebase from '../../context/firebaseContext';
 
+import cn from 'classnames';
+import s from './UserForm.module.scss'; 
+
 const UserForm = (props) => {
 
   const { history } = props;
@@ -23,17 +26,17 @@ const UserForm = (props) => {
           setAllUsers(res);
           return res;
       })
-      .then(res => {
-        if (id !== 'new-user') {
-          const user = res.find(item => +item.id === +id);
-          console.log(user, id)
-          setThisUserName(user.name);
-          setThisUserSurname(user.surname);
-          setThisUserLogin(user.login);
-          setThisUserRole(user.role);
-          setThisUserDepartmentId(user.department_id || null);
-        } 
-      })
+      // .then(res => {
+      //   if (id !== 'new-user') {
+      //     const user = res.find(item => +item.id === +id);
+      //     console.log(user, id)
+      //     setThisUserName(user.name);
+      //     setThisUserSurname(user.surname);
+      //     setThisUserLogin(user.login);
+      //     setThisUserRole(user.role);
+      //     setThisUserDepartmentId(+user.department_id);
+      //   } 
+      // })
       .catch(e => console.log(e))
       .finally(() => console.log('сходили за юзерами'));
   }, [id]);
@@ -46,15 +49,29 @@ const UserForm = (props) => {
         setAllDepartments(res)
         return res;
       })
-      .then(res => {
-        if (thisUserDepartmentId === 0 || thisUserDepartmentId === null) {
-          console.log(res[0].name)
-          setThisUserDepartmentId(res[0].id);
-        }
-      })
+      // .then(res => {
+      //   if (thisUserDepartmentId === 0 || thisUserDepartmentId === null) {
+      //     console.log(res[0].name)
+      //     setThisUserDepartmentId(res[0].id);
+      //   }
+      // })
       .catch(e => console.log(e))
-      .finally(() => console.log('сходили за отделами', allDepartments));
+      .finally(() => console.log('сходили за отделами'));
   }, []);
+  useEffect(() => {
+    if (id !== 'new-user' && allUsers.length > 0) {
+      const user = allUsers.find(item => +item.id === +id);
+      console.log(user, id)
+      setThisUserName(user.name);
+      setThisUserSurname(user.surname);
+      setThisUserLogin(user.login);
+      setThisUserRole(user.role);
+      setThisUserDepartmentId(+user.department_id);
+    }
+    if (id === 'new-user' && allDepartments.length > 0) {
+      setThisUserDepartmentId(+allDepartments[0].id);
+    }
+  }, [id, allDepartments, allUsers]);
 
   const handleName = (event) => {
     setThisUserName(event.target.value);
@@ -73,7 +90,6 @@ const UserForm = (props) => {
   }
 
   const handleChangeDepartment = (event) => {
-    console.log(event.target.value)
     setThisUserDepartmentId(event.target.value);
   }
 
@@ -117,28 +133,39 @@ const UserForm = (props) => {
 
     return (
       <>
-        <h2>user form</h2>
+        <h2 className={cn(s['page-title'])}>{id === 'new-user' ? 'Новый пользователь' : 'Редактировать пользователя'}</h2>
         <div>
-          <form onSubmit={submitForm}>
-              <div>
-                  <label htmlFor="name">Имя</label>
-                  <input type="text" id="name" name="name" defaultValue={thisUserName} onChange={handleName} />
+          <form 
+            onSubmit={submitForm}
+            className={cn(s.form)}
+          >
+              <div
+                className={cn(s['form-field'], s['form-field__select-wrap'])}
+              >
+                  <label 
+                    htmlFor="name"
+                    className={cn(s['select-label'])}
+                  >
+                    Имя:
+                  </label>
+                  <input type="text" id="name" name="name" defaultValue={thisUserName} onChange={handleName} className={cn(s['input-elem'])} />
               </div>
-              <div>
-                  <label htmlFor="surname">Фамилия</label>
-                  <input type="text" id="surname" name="surname" defaultValue={thisUserSurname} onChange={handleSurname} />
+              <div className={cn(s['form-field'], s['form-field__select-wrap'])}>
+                  <label htmlFor="surname" className={cn(s['select-label'])}>Фамилия:</label>
+                  <input type="text" id="surname" name="surname" defaultValue={thisUserSurname} onChange={handleSurname} className={cn(s['input-elem'])} />
               </div>
-              <div>
-                  <label htmlFor="login">Логин</label>
-                  <input type="text" id="login" name="login" defaultValue={thisUserLogin} onChange={handleLogin} />
+              <div className={cn(s['form-field'], s['form-field__select-wrap'])}>
+                  <label htmlFor="login" className={cn(s['select-label'])}>Логин:</label>
+                  <input type="text" id="login" name="login" defaultValue={thisUserLogin} onChange={handleLogin} className={cn(s['input-elem'])} />
               </div>
-              <div>
-                  <label htmlFor="departament">Отдел</label>
+              <div className={cn(s['form-field'], s['form-field__select-wrap'])}>
+                  <label htmlFor="departament" className={cn(s['select-label'])}>Отдел:</label>
                   <select
                     id="departament" 
                     name="departament"
                     value={+thisUserDepartmentId}
                     onChange={handleChangeDepartment}
+                    className={cn(s['select-element'])}
                   >
                     {
                       allDepartments.map(item => (
@@ -147,12 +174,8 @@ const UserForm = (props) => {
                     }
                   </select>
               </div>
-              {/* <div>
-                  <label htmlFor="role">Статус(роль)</label>
-                  <input type="text" id="role" name="role" defaultValue={thisUserRole} onChange={handleRole} />
-              </div> */}
-              <div>
-                  <button>
+              <div className={cn(s['form-field'])}>
+                  <button className={cn(s['submit-button'])}>
                       Отправить
                   </button>
               </div>
