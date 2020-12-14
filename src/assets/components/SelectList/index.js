@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 import s from './SelectList.module.scss';
 
 const SelectList = (props) => {
     const { identificate, title, defaultValue, handleFunction, data } = props;
     const [thisValue, setThisValue] = useState(defaultValue);
+
+    useEffect(() => {
+        setThisValue(defaultValue);
+    }, [defaultValue]);
+
     const chooseId = (event) => {
-        handleFunction(event.target.value);
-        setThisValue(event.target.value);
+        handleFunction(+event.target.value);
+        setThisValue(+event.target.value);
     }
+
     return (
         <>
             {/* <label htmlFor={identificate}>{title}</label> */}

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout/MainLayout';
 import AuthLayout from '../layouts/AuthLayout/AuthLayout';
@@ -13,10 +13,21 @@ import VacationList from '../components/VacationList';
 import VacationForm from '../components/VacationForm';
 import UserForm from '../components/UserForm';
 // import loginContext from '../context/loginContext';
+import { rolesConfig } from '../services/constants';
 
 const useRoutes = (props) => {
 
-    console.log(props);
+    const { login, userData } = props;
+    // console.log(props);
+
+    const [roleId, setRoleId] = useState(+rolesConfig.defaultUser);
+    useEffect(() => {
+        if (userData) {
+            setRoleId(+userData.role_id);
+        }
+    }, [userData]);
+
+    // console.log(roleId, rolesConfig.defaultUser)
 
     return (
         <Switch>
@@ -29,47 +40,85 @@ const useRoutes = (props) => {
                 }}
             >
             </Route>
-            <PrivateRoute 
-                path={routesConfig.users.url}
-                component={UserList}
-            />
-            <PrivateRoute 
-                path={routesConfig.user.url}
-                component={UserForm}
-            />
-            <PrivateRoute 
-                path={routesConfig['new-user'].url}
-                component={UserForm}
-            />
-            <PrivateRoute 
-                path={routesConfig.departments.url}
-                component={DepartmentList}
-            />
-            <PrivateRoute 
-                path={routesConfig.department.url}
-                component={DepartmentForm}
-            />
-            <PrivateRoute 
-                path={routesConfig['new-department'].url}
-                component={DepartmentForm}
-            />
-            <PrivateRoute 
-                path={routesConfig.vacations.url}
-                component={VacationList}
-            />
-            <PrivateRoute 
-                path={routesConfig.vacation.url}
-                component={VacationForm}
-            />
-            <PrivateRoute 
-                path={routesConfig['new-vacation'].url}
-                component={VacationForm}
-            />
-            <PrivateRoute 
-                path={routesConfig.home.url}
-                exact
-                component={ContentWrap}
-            />
+            {
+                roleId !== rolesConfig.defaultUser
+                ? (
+                    roleId !== rolesConfig.simpleUser 
+                    ? (
+                          <>
+                              <PrivateRoute 
+                                  path={routesConfig.users.url}
+                                  component={UserList}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig.user.url}
+                                  component={UserForm}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig['new-user'].url}
+                                  component={UserForm}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig.departments.url}
+                                  component={DepartmentList}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig.department.url}
+                                  component={DepartmentForm}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig['new-department'].url}
+                                  component={DepartmentForm}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig.vacations.url}
+                                  component={VacationList}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig.vacation.url}
+                                  component={VacationForm}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig['new-vacation'].url}
+                                  component={VacationForm}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig.home.url}
+                                  exact
+                                  component={ContentWrap}
+                              />
+                          </>
+                    )
+                    : (
+                        <>
+                              <PrivateRoute 
+                                  path={routesConfig.vacations.url}
+                                  component={VacationList}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig.vacation.url}
+                                  component={VacationForm}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig['new-vacation'].url}
+                                  component={VacationForm}
+                              />
+                              <PrivateRoute 
+                                  path={routesConfig.home.url}
+                                  exact
+                                  component={ContentWrap}
+                              />
+                        </>
+                    )
+                )
+                : (
+                    <PrivateRoute 
+                        path={routesConfig.home.url}
+                        exact
+                        component={ContentWrap}
+                    />
+                )
+            }
             <Redirect to="/" />
         </Switch>
     );

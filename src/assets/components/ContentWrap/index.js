@@ -3,8 +3,9 @@ import cn from 'classnames';
 import s from './ContentWrap.module.scss';
 
 import Firebase from '../../context/firebaseContext';
+import loginContext from '../../context/loginContext';
 import Row from '../Row';
-import { months, ALL_USERS_FROM_ALL_DEPARTMENTS_ID } from '../../services/constants';
+import { months, ALL_USERS_FROM_ALL_DEPARTMENTS_ID, rolesConfig } from '../../services/constants';
 import SelectList from '../SelectList';
 
 const ContentWrap = (props) => {
@@ -17,8 +18,11 @@ const ContentWrap = (props) => {
     const [thisDepartmentId, setThisDepartmentId] = useState(0);
     const [allYears, setAllYears] = useState([]);
     const [thisYear, setThisYear] = useState(new Date().getFullYear());
-
     const { getUsersRef, getDepartmentsRef, getVacationsRef, getYearsRef } = useContext(Firebase);
+
+    const { userData, allUsersData, allVacationsData, allDepartmentsData } = useContext(loginContext);
+    const [roleId, setRoleId] = useState(rolesConfig.defaultUser); 
+    const [departsmentForThisRole, setDepartmentForThisRole] = useState(0);
 
     useEffect(() => {
         getYearsRef()
@@ -26,39 +30,76 @@ const ContentWrap = (props) => {
             .then(response => response.val())
             .then(res => setAllYears(res))
             .catch(e => console.log(e))
-            .finally(() => console.log('сходили за городами'));        
+            .finally(() => console.log('сходили за годами'));        
     }, []);
     useEffect(() => {
-        getUsersRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllUsers(res))
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за юзерами', allUsers));        
-    }, []);
+        // getUsersRef()
+        //     .once('value')
+        //     .then(response => response.val())
+        //     .then(res => setAllUsers(res))
+        //     .catch(e => console.log(e))
+        //     .finally(() => console.log('сходили за юзерами', allUsers));  
+            
+        setAllUsers(allUsersData);
+    }, [allUsersData]);
+    // useEffect(() => {
+    //     getDepartmentsRef()
+    //         .once('value')
+    //         .then(response => response.val())
+    //         .then(res => {
+    //             if (+roleId === rolesConfig.defaultUser || +roleId === rolesConfig.simpleUser && departsmentForThisRole !== 0) {
+    //                 const departsment = res.filter(item => +item.id === +departsmentForThisRole);
+    //                 if (departsment.length > 0) {
+    //                     setAllDepartments(departsment);
+    //                     setThisDepartmentId(departsment[0].id);
+    //                 }
+    //             } else {
+    //                 res.unshift({
+    //                     id: ALL_USERS_FROM_ALL_DEPARTMENTS_ID,
+    //                     name: 'Все'
+    //                 });
+    //                 setAllDepartments(res);
+    //                 setThisDepartmentId(res[0].id);
+    //             }
+    //         })
+    //         .catch(e => console.log(e))
+    //         .finally(() => console.log('сходили за отделами', allDepartments));
+    // }, [roleId, departsmentForThisRole]);
     useEffect(() => {
-        getDepartmentsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => {
-                res.unshift({
+        if (+roleId === rolesConfig.defaultUser || +roleId === rolesConfig.simpleUser && allDepartmentsData.length > 0) {
+            const departsment = allDepartmentsData.filter(item => +item.id === +departsmentForThisRole);
+            if (departsment.length > 0) {
+                setAllDepartments(departsment);
+                setThisDepartmentId(departsment[0].id);
+            }
+        } else {
+            // console.log(allDepartmentsData, allDepartments)
+            const result = allDepartmentsData.find(item => item.id === ALL_USERS_FROM_ALL_DEPARTMENTS_ID);
+            // console.log(result)
+            if (!result) {
+                allDepartmentsData.unshift({
                     id: ALL_USERS_FROM_ALL_DEPARTMENTS_ID,
                     name: 'Все'
                 });
-                setAllDepartments(res);
-                setThisDepartmentId(res[0].id);
-            })
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за отделами', allDepartments));
-    }, []);
+                setAllDepartments(allDepartmentsData);
+                setThisDepartmentId(allDepartmentsData[0].id);
+            } else {
+                setAllDepartments(allDepartmentsData);
+                setThisDepartmentId(allDepartmentsData[0].id);               
+            }
+        }
+    }, [allDepartmentsData, roleId, departsmentForThisRole]);
+
     useEffect(() => {
-        getVacationsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllVacations(res))
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за отпусками', allVacations));
-    }, []);
+        // getVacationsRef()
+        //     .once('value')
+        //     .then(response => response.val())
+        //     .then(res => setAllVacations(res))
+        //     .catch(e => console.log(e))
+        //     .finally(() => console.log('сходили за отпусками', allVacations));
+
+        setAllVacations(allVacationsData);
+    }, [allVacationsData]);
     useEffect(() => {
         const users = thisDepartmentId === ALL_USERS_FROM_ALL_DEPARTMENTS_ID ? allUsers : allUsers.filter(item => +item.department_id === +thisDepartmentId);
         const data = users.map(item => {
@@ -130,6 +171,21 @@ const ContentWrap = (props) => {
         });
         setBigData(data);
     }, [allUsers, allVacations, allDepartments, thisYear, thisDepartmentId]);
+
+    useEffect(() => {
+        if (userData) {
+            setRoleId(userData.role_id);
+            setDepartmentForThisRole(userData.department_id);
+        }
+    }, [userData]);
+    // useEffect(() => {
+    //     if (+roleId === rolesConfig.defaultUser || +roleId === rolesConfig.simpleUser) {
+    //         const departsment = allDepartments.filter(item => +item.id === +departsmentForThisRole);
+    //         setAllDepartments(departsment);
+    //         console.log(departsment);
+    //         setThisDepartmentId(departsment[0].id);
+    //     }
+    // }, [roleId, allDepartments]);
 
     const chooseDepartment = (id) => {
         setThisDepartmentId(+id);

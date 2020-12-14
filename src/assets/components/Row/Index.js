@@ -2,7 +2,7 @@ import React from 'react';
 import cn from 'classnames';
 import s from './Row.module.scss';
 
-import Date from '../Date';
+import DateCell from '../Date';
 
 import { months } from '../../services/constants';
 
@@ -21,10 +21,11 @@ const Row = (props) => {
                     months.map((item, index) => {
                         
                         const result = vacations.find(item => +item[0].monthNumber === +index);
+                        // console.log(result)
 
                         return (
                             <div key={index} className={cn(s.col)}>
-                                <Date data={result || null} name={name} />
+                                <DateCell data={result || null} name={name} index={+index} />
                                 {/* {`${id}_${index}`} */}
                             </div>
                         );

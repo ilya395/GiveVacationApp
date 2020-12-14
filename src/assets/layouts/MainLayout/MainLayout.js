@@ -15,6 +15,7 @@ const { Title } = Typography;
 const MainLayout = ({children, ...props}) => {
 
   const { auth } = useContext(Firebase);
+  const { history } = props;
 
   const logoutPlz = () => {
     console.log('ок, logout');
@@ -22,7 +23,6 @@ const MainLayout = ({children, ...props}) => {
     auth.signOut();
     localStorage.removeItem('userId');
 
-    const { history } = props;
     history.push('/auth');
   }
 

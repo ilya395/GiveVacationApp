@@ -2,18 +2,24 @@ import React from 'react';
 import cn from 'classnames';
 import s from './Date.module.scss';
 
-const Date = (props) => {
+const DateCell = (props) => {
 
-    const { data, name } = props;
-    // if (data) {
-    //     console.log(`${name}: `,data)
-    // }
+    const { data, name, index } = props;
+    let daysCount = 31;
+
+    if (data) {
+        // console.log(`${name}: `,data, index);
+
+        daysCount = new Date(data[0].year, data[0].monthNumber, 0).getDate(); // data[0].monthNumber + 1 === 12 ? ( new Date(data[0].year, data[0].monthNumber + 1, 1) - new Date(data[0].year, data[0].monthNumber + 1, 1) ) : ( new Date(data[0].year, data[0].monthNumber + 1, 1) - new Date(data[0].year + 1, 1, 1) );
+        // console.log(daysCount, data[0].monthNumber + 1)
+    }
+    // console.log(data)
 
     return (
         <>
             <div className={cn(s.root)}>
                 {
-                    data !== null ? 
+                    data !== null && typeof data !== 'undefined' ? 
                     (
                         <div 
                             className={cn(s['inner-elem'])}
@@ -28,8 +34,8 @@ const Date = (props) => {
                                 //     left: 0
                                 // }
                                 {
-                                    left: `${data[0].day/31*100}%`,
-                                    right: `${(31 - +data[1].day)/31*100}%`,
+                                    left: `${ (data[0].day - 1) / (daysCount - 1) * 100 }%`,
+                                    right: `${ daysCount === +data[1].day ? 0 : ( ( (daysCount - 1) - (+data[1].day - 1) ) / ( daysCount - 1) * 100 ) }%`,
                                 }
                             }
                         >
@@ -46,4 +52,4 @@ const Date = (props) => {
     );
 }
 
-export default Date;
+export default DateCell;

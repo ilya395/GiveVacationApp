@@ -23,7 +23,7 @@ const tailLayout = {
 
 const AuthLayout = (props) => {
 
-    console.log('#### props in Auth: ', props, props.history);
+    // console.log('#### props in Auth: ', props, props.history);
 
     const [loading, setLoading] = useState(true);
     useEffect(() => setLoading(false), []);
@@ -46,7 +46,7 @@ const AuthLayout = (props) => {
         // const { history } = props;
         if ( authOk === true ) {
             // console.log(history);
-            history.push('/main');  
+            history.push('/');  
         }
     }, [authOk, history]);
 

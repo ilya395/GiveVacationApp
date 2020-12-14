@@ -7,10 +7,11 @@ import { Link } from 'react-router-dom';
 import SelectList from '../SelectList';
 
 import loginContext from '../../context/loginContext';
+import { rolesConfig, ALL_USERS_FROM_ALL_DEPARTMENTS_ID } from '../../services/constants'
 
 const VacationList = (props) => {
 
-    const { login } =  useContext(loginContext);
+    const { login, userData, allDepartmentsData, allUsersData, allVacationsData } =  useContext(loginContext);
 
     console.log(login);
 
@@ -33,37 +34,58 @@ const VacationList = (props) => {
             .finally(() => console.log('сходили за годами'));        
     }, []);
     useEffect(() => {
-        getUsersRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllUsers(res))
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за юзерами'));
-    }, []);
+        // getUsersRef()
+        //     .once('value')
+        //     .then(response => response.val())
+        //     .then(res => setAllUsers(res))
+        //     .catch(e => console.log(e))
+        //     .finally(() => console.log('сходили за юзерами'));
+
+        setAllUsers(allUsersData)
+    }, [allUsersData]);
     useEffect(() => {
-        getDepartmentsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => {
-                setAllDepartments(res);
-                setThisDepartmentId(+res[0].id);
-            })
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за отделами'));
-    }, []);
+        // getDepartmentsRef()
+        //     .once('value')
+        //     .then(response => response.val())
+        //     .then(res => {
+        //         setAllDepartments(res);
+        //         setThisDepartmentId(+res[0].id);
+        //     })
+        //     .catch(e => console.log(e))
+        //     .finally(() => console.log('сходили за отделами'));
+
+        if (+userData.role_id === rolesConfig.simpleUser) {
+            const departaments = allDepartmentsData.filter(item => +item.id === +userData.department_id)
+
+            setAllDepartments(departaments);
+            setThisDepartmentId(+departaments[0].id);
+        } else {
+            setAllDepartments(allDepartmentsData);
+            setThisDepartmentId(+allDepartmentsData[0].id);            
+        }
+
+    }, [allDepartmentsData, userData]);
     useEffect(() => {
-        getVacationsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllVacations(res))
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за отпусками'));
-    }, []);
+        // getVacationsRef()
+        //     .once('value')
+        //     .then(response => response.val())
+        //     .then(res => setAllVacations(res))
+        //     .catch(e => console.log(e))
+        //     .finally(() => console.log('сходили за отпусками'));
+
+        if (+userData.role_id === rolesConfig.simpleUser) {
+            const vacations = allVacationsData.filter(item => +item.user_id === +userData.id);
+            setAllVacations(vacations);
+        } else {
+            setAllVacations(allVacationsData);
+        }
+
+    }, [allVacationsData, userData]);
 
     useEffect(() => {
         const users = allUsers.filter(item => +item.department_id === +thisDepartmentId);
         const usersId = users.map(item => +item.id);
-        const result = allVacations.filter(item => usersId.indexOf(+item.user_id) !== -1 && new Date(+item.vacation_start).getFullYear() === +thisYear && new Date(+item.vacation_end).getFullYear() === +thisYear);
+        const result = thisDepartmentId === ALL_USERS_FROM_ALL_DEPARTMENTS_ID ? allVacations.filter(item => new Date(+item.vacation_start).getFullYear() === +thisYear && new Date(+item.vacation_end).getFullYear() === +thisYear) : allVacations.filter(item => usersId.indexOf(+item.user_id) !== -1 && new Date(+item.vacation_start).getFullYear() === +thisYear && new Date(+item.vacation_end).getFullYear() === +thisYear);
         setChoosedVacations(result);
     }, [allUsers, allVacations, thisYear, thisDepartmentId]);
 
@@ -76,12 +98,12 @@ const VacationList = (props) => {
     }
 
     const chooseDepartment = (id) => {
-        console.log(id); // id отдела
+        // console.log(id); // id отдела
         setThisDepartmentId(id);
     }
 
     const chooseYear = (id) => {
-        console.log(id); // id года
+        // console.log(id); // id года
         setThisYear(+id);
     }
 
@@ -146,7 +168,7 @@ const VacationList = (props) => {
                                 </div>
                                 <div className={cn(s['one-row__dates'], s['one-row__elem'])}>
                                     <span>
-                                        {`${new Date(item.vacation_start).getFullYear()}-${new Date(item.vacation_start).getMonth()}-${new Date(item.vacation_start).getDate()}  :  ${new Date(item.vacation_end).getFullYear()}-${new Date(item.vacation_end).getMonth()}-${new Date(item.vacation_end).getDate()}`}
+                                        {`${new Date(item.vacation_start).getFullYear()}-${new Date(item.vacation_start).getMonth() + 1}-${new Date(item.vacation_start).getDate()}  :  ${new Date(item.vacation_end).getFullYear()}-${new Date(item.vacation_end).getMonth() + 1}-${new Date(item.vacation_end).getDate()}`}
                                     </span>
                                 </div>
                                 <div className={cn(s['one-row__buttons'], s['one-row__elem'])}>

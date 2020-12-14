@@ -3,21 +3,47 @@ import Firebase from '../../context/firebaseContext';
 
 import cn from 'classnames';
 import s from './UserForm.module.scss'; 
+import SelectList from '../SelectList';
 
 const UserForm = (props) => {
 
   const { history } = props;
-  const { getVacationsRef, getUsersRef, getDepartmentsRef } = useContext(Firebase);
+  const { getRolesRef, getUsersRef, getDepartmentsRef } = useContext(Firebase);
   const [id, setId] = useState(props.match.params.id);
   const [allUsers, setAllUsers] = useState([]);
   const [thisUserId, setThisUserId] = useState(0);
   const [thisUserName, setThisUserName] = useState('');
   const [thisUserSurname, setThisUserSurname] = useState('');
   const [thisUserLogin, setThisUserLogin] = useState('');
-  const [thisUserRole, setThisUserRole] = useState('');
+  const [allUsersRole, setAllUsersRole] = useState([]);
+  const [thisUserRoleId, setThisUserRoleId] = useState(0);
   const [allDepartments, setAllDepartments] = useState([]);
   const [thisUserDepartmentId, setThisUserDepartmentId] = useState(0);
 
+  useEffect(() => {
+    getRolesRef()
+      .once('value')
+      .then(response => response.val())
+      .then(res => setAllUsersRole(res))
+      .catch(e => console.log(e))
+      .finally(() => console.log('сходили за юзерами'));
+  }, []);
+  useEffect(() => {
+    if (id && allUsers.length > 0 && allUsersRole.length > 0) {
+      if (id === 'new-user') {
+        const minRole = allUsersRole.find(item => +item.id === 900); // на самом деле здесь нужно найти минимальное значение поля права
+        setThisUserRoleId(+minRole.id);
+      } else {
+        const user = allUsers.find(item => +item.id === +id);
+        if (typeof user.role_id !== 'undefined') {
+          setThisUserRoleId(+user.role_id);
+        } else {
+          const minRole = allUsersRole.find(item => +item.id === 900); // на самом деле здесь нужно найти минимальное значение поля права
+          setThisUserRoleId(+minRole.id);
+        }
+      }
+    }
+  }, [allUsers, allUsersRole]);
   useEffect(() => {
     getUsersRef()
       .once('value')
@@ -33,14 +59,13 @@ const UserForm = (props) => {
       //     setThisUserName(user.name);
       //     setThisUserSurname(user.surname);
       //     setThisUserLogin(user.login);
-      //     setThisUserRole(user.role);
+      //     setThisUserRoleId(user.role_id);
       //     setThisUserDepartmentId(+user.department_id);
       //   } 
       // })
       .catch(e => console.log(e))
       .finally(() => console.log('сходили за юзерами'));
   }, [id]);
-
   useEffect(() => {
     getDepartmentsRef()
       .once('value')
@@ -61,11 +86,9 @@ const UserForm = (props) => {
   useEffect(() => {
     if (id !== 'new-user' && allUsers.length > 0) {
       const user = allUsers.find(item => +item.id === +id);
-      console.log(user, id)
       setThisUserName(user.name);
       setThisUserSurname(user.surname);
       setThisUserLogin(user.login);
-      setThisUserRole(user.role);
       setThisUserDepartmentId(+user.department_id);
     }
     if (id === 'new-user' && allDepartments.length > 0) {
@@ -85,12 +108,12 @@ const UserForm = (props) => {
     setThisUserLogin(event.target.value);
   }
 
-  const handleRole = (event) => {
-    setThisUserRole(event.target.value);
-  }
-
   const handleChangeDepartment = (event) => {
     setThisUserDepartmentId(event.target.value);
+  }
+
+  const handleChooseRole = (id) => {
+    setThisUserRoleId(+id);
   }
 
   const submitForm = (event) => {
@@ -102,32 +125,33 @@ const UserForm = (props) => {
       allUsers[+findResultIndex].surname = thisUserSurname;
       allUsers[+findResultIndex].login = thisUserLogin;
       allUsers[+findResultIndex].department_id = thisUserDepartmentId;
-      // allUsers[+findResultIndex].role = vacationStartValue;
-        if (thisUserName !== '' && thisUserSurname !== '' && thisUserLogin !== '' && thisUserDepartmentId !== '') {
-            getUsersRef()
-                .set(allUsers)
-                .then(() => history.push('/users'))
-                .catch(e => console.log(e));
-        } else {
-            alert('Ошибка в данных');
-        }
+      allUsers[+findResultIndex].role_id = thisUserRoleId;
+      if (thisUserName !== '' && thisUserSurname !== '' && thisUserLogin !== '' && thisUserDepartmentId !== '') {
+          getUsersRef()
+              .set(allUsers)
+              .then(() => history.push('/users'))
+              .catch(e => console.log(e));
+      } else {
+          alert('Ошибка в данных');
+      }
     } else { // нет совпадений
       allUsers.push({
-            name: thisUserName,
-            surname: thisUserSurname,
-            login: thisUserLogin,
-            id: new Date().getTime(),
-            department_id: thisUserDepartmentId,
-        });
+          name: thisUserName,
+          surname: thisUserSurname,
+          login: thisUserLogin,
+          id: new Date().getTime(),
+          department_id: thisUserDepartmentId,
+          role_id: thisUserRoleId,
+      });
 
-        if (thisUserName !== '' && thisUserSurname !== '' && thisUserLogin !== '' && thisUserDepartmentId !== '') {
-            getUsersRef()
-                .set(allUsers)
-                .then(() => history.push('/users'))
-                .catch(e => console.log(e));
-        } else {
-            alert('Ошибка в данных');
-        }
+      if (thisUserName !== '' && thisUserSurname !== '' && thisUserLogin !== '' && thisUserDepartmentId !== '') {
+          getUsersRef()
+              .set(allUsers)
+              .then(() => history.push('/users'))
+              .catch(e => console.log(e));
+      } else {
+          alert('Ошибка в данных');
+      }
     }
   }
 
@@ -173,6 +197,17 @@ const UserForm = (props) => {
                       ))
                     }
                   </select>
+              </div>
+              <div className={cn(s['form-field'], s['form-field__select-wrap'])}>
+                  <label htmlFor="roles" className={cn(s['select-label'])}>Набор прав:</label>
+                <SelectList
+                  identificate={'roles'}
+                  title={'Выберите набор прав'}
+                  defaultValue={+thisUserRoleId} 
+                  handleFunction={handleChooseRole} 
+                  data={allUsersRole}
+                  className={cn(s['select-component'])}
+                />
               </div>
               <div className={cn(s['form-field'])}>
                   <button className={cn(s['submit-button'])}>

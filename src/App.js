@@ -10,12 +10,41 @@ import LoginContext from './assets/context/loginContext';
 
 function App() {
 
-  const { auth, getUsersRef } = useContext(Firebase);
+  const { auth, getUsersRef, getDepartmentsRef, getVacationsRef } = useContext(Firebase);
 
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [thisUserData, setThisUserData] = useState(null);
+
+  const [allDepartments, setAllDepartments] = useState([]);
+  const [allVacations, setAllVacations] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+
+  useEffect(() => {
+    getDepartmentsRef()
+      .once('value')
+      .then(response => response.val())
+      .then(res => setAllDepartments(res))
+      .catch(e => console.log(e))
+      .finally(() => console.log('сходили за отделами'));
+  }, []);
+
+  useEffect(() => {
+    getVacationsRef()
+      .once('value')
+      .then(response => response.val())
+      .then(res => setAllVacations(res))
+    // getVacationsRef()
+    //   .on('value', res => {
+    //     if (res.exists()) {
+    //       console.log(res)
+    //       setAllVacations( res.val() );
+    //     }
+    //   })
+      .catch(e => console.log(e))
+      .finally(() => console.log('сходили за отпусками'));
+  }, []);
 
   useEffect(() => {
     if (!localStorage.getItem('userId')) {
@@ -47,11 +76,13 @@ function App() {
             .once('value')
             .then(response => response.val())
             .then(res => {
+              setAllUsers(res);
               const newUser = res.find(item => item.login === user.email);
               setThisUserData(newUser);
             })
             .catch(e => console.log(e))
             .finally(() => console.log('сходили за юзерами'));
+
         } else {
           setUserId(false);
           localStorage.removeItem('userId');
@@ -74,7 +105,7 @@ function App() {
     <>
       <Router>
         <LoginContext.Provider
-          value={{login: userEmail}}
+          value={{login: userEmail, userData: thisUserData, allDepartmentsData: allDepartments, allUsersData: allUsers, allVacationsData: allVacations}}
         >
           {routes}
         </LoginContext.Provider>

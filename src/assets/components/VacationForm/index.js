@@ -4,6 +4,8 @@ import Firebase from '../../context/firebaseContext';
 import cn from 'classnames';
 import s from './VacationForm.module.scss';
 import SelectList from '../SelectList';
+import loginContext from '../../context/loginContext';
+import { rolesConfig } from '../../services/constants';
 
 const VacationForm = (props) => {
     const { history } = props;
@@ -18,58 +20,98 @@ const VacationForm = (props) => {
     const [vacationEnd, setVacationEnd] = useState(0);
     const [vacationStartValue, setVacationStartValue] = useState(0);
     const [vacationEndValue, setVacationEndValue] = useState(0);
+
+    const { login, userData, allDepartmentsData, allUsersData, allVacationsData } = useContext(loginContext);
     
     useEffect(() => {
-        getUsersRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => {
-                setAllUsers(res);
-            })
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за юзерами'));
-    }, []);
+        // getUsersRef()
+        //     .once('value')
+        //     .then(response => response.val())
+        //     .then(res => {
+        //         setAllUsers(res);
+        //     })
+        //     .catch(e => console.log(e))
+        //     .finally(() => console.log('сходили за юзерами'));
+
+        if (+userData.role_id === rolesConfig.defaultUser || +userData.role_id === rolesConfig.simpleUser) {
+            const user = allUsersData.filter(item => +item.id === userData.id);
+            console.log(user)
+            setAllUsers(user);
+        } else {
+            setAllUsers(allUsersData);
+        }
+    }, [allUsersData, userData]);
     useEffect(() => {
-        getVacationsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => {
-                if (res == null) {
-                    res = [];
-                }
-                setAllVacations(res);
-                return res;
-            })
-            .then((res) => {
-                console.log(id)
-                if (id !== 'new-vacation' && id !== 0) {
+        // getVacationsRef()
+        //     .once('value')
+        //     .then(response => response.val())
+        //     .then(res => {
+        //         if (res == null) {
+        //             res = [];
+        //         }
+        //         setAllVacations(res);
+        //         return res;
+        //     })
+        //     .then((res) => {
+        //         console.log(id)
+        //         if (id !== 'new-vacation' && id !== 0) {
 
-                    const vacation = res.filter(item => item.id === +id);
+        //             const vacation = res.filter(item => item.id === +id);
 
-                    const objectOfVacationer = allUsers.find(item => +item.id === +vacation[0].user_id);
+        //             const objectOfVacationer = allUsers.find(item => +item.id === +vacation[0].user_id);
 
-                    setThisVacationName(`${objectOfVacationer.name} ${objectOfVacationer.surname}`);
+        //             setThisVacationName(`${objectOfVacationer.name} ${objectOfVacationer.surname}`);
                     
-                    const startDate = vacation[0].vacation_start;
-                    setVacationStartValue(startDate);
-                    setVacationStart(`${new Date(startDate).getFullYear()}-${(new Date(startDate).getMonth() + 1) > 9 ? (new Date(startDate).getMonth() + 1) : `0${new Date(startDate).getMonth() + 1}`}-${new Date(startDate).getDate() > 9 ? new Date(startDate).getDate() : `0${new Date(startDate).getDate()}`}`);
+        //             const startDate = vacation[0].vacation_start;
+        //             setVacationStartValue(startDate);
+        //             setVacationStart(`${new Date(startDate).getFullYear()}-${(new Date(startDate).getMonth() + 1) > 9 ? (new Date(startDate).getMonth() + 1) : `0${new Date(startDate).getMonth() + 1}`}-${new Date(startDate).getDate() > 9 ? new Date(startDate).getDate() : `0${new Date(startDate).getDate()}`}`);
                     
-                    const endDate = vacation[0].vacation_end;
-                    setVacationEndValue(endDate);
-                    setVacationEnd(`${new Date(endDate).getFullYear()}-${(new Date(endDate).getMonth() + 1) > 9 ? (new Date(endDate).getMonth() + 1) : `0${new Date(endDate).getMonth() + 1}`}-${new Date(endDate).getDate() > 9 ? new Date(endDate).getDate() : `0${new Date(endDate).getDate()}`}`);
+        //             const endDate = vacation[0].vacation_end;
+        //             setVacationEndValue(endDate);
+        //             setVacationEnd(`${new Date(endDate).getFullYear()}-${(new Date(endDate).getMonth() + 1) > 9 ? (new Date(endDate).getMonth() + 1) : `0${new Date(endDate).getMonth() + 1}`}-${new Date(endDate).getDate() > 9 ? new Date(endDate).getDate() : `0${new Date(endDate).getDate()}`}`);
                     
-                    setThisVacationIndex(vacation[0].id);
+        //             setThisVacationIndex(vacation[0].id);
 
-                    setThisUserId(+objectOfVacationer.id);
-                } else {
-                    setThisVacationName('Имя нового отпускника');
-                    setThisVacationIndex(new Date().getTime());
-                    allUsers[0] ? setThisUserId(allUsers[0].id) : setThisUserId(0);
-                }                
-            })
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за отпусками', allVacations));
-    }, [allUsers]);
+        //             setThisUserId(+objectOfVacationer.id);
+        //         } else {
+        //             setThisVacationName('Имя нового отпускника');
+        //             setThisVacationIndex(new Date().getTime());
+        //             allUsers[0] ? setThisUserId(allUsers[0].id) : setThisUserId(0);
+        //         }                
+        //     })
+        //     .catch(e => console.log(e))
+        //     .finally(() => console.log('сходили за отпусками', allVacations));
+
+        setAllVacations(allVacationsData);
+
+        if ( typeof id !== 'undefined' && id !== 'new-vacation' && id !== 0 && allVacationsData.length > 0 && allUsers.length > 0 ) {
+
+            console.log(allVacationsData, allUsers, id)
+
+            const vacation = allVacationsData.filter(item => item.id === +id);
+
+            const objectOfVacationer = allUsers.find(item => +item.id === +vacation[0].user_id);
+
+            setThisVacationName(`${objectOfVacationer.name} ${objectOfVacationer.surname}`);
+            
+            const startDate = vacation[0].vacation_start;
+            setVacationStartValue(startDate);
+            setVacationStart(`${new Date(startDate).getFullYear()}-${(new Date(startDate).getMonth() + 1) > 9 ? (new Date(startDate).getMonth() + 1) : `0${new Date(startDate).getMonth() + 1}`}-${new Date(startDate).getDate() > 9 ? new Date(startDate).getDate() : `0${new Date(startDate).getDate()}`}`);
+            
+            const endDate = vacation[0].vacation_end;
+            setVacationEndValue(endDate);
+            setVacationEnd(`${new Date(endDate).getFullYear()}-${(new Date(endDate).getMonth() + 1) > 9 ? (new Date(endDate).getMonth() + 1) : `0${new Date(endDate).getMonth() + 1}`}-${new Date(endDate).getDate() > 9 ? new Date(endDate).getDate() : `0${new Date(endDate).getDate()}`}`);
+            
+            setThisVacationIndex(vacation[0].id);
+
+            setThisUserId(+objectOfVacationer.id);
+        } else {
+            setThisVacationName('Имя нового отпускника');
+            setThisVacationIndex(new Date().getTime());
+            allUsers[0] ? setThisUserId(allUsers[0].id) : setThisUserId(0);
+        }   
+
+    }, [allUsers, allVacationsData]);
 
     const handleChangeName = (event) => {
         setThisUserId(event.target.value);
