@@ -4,7 +4,7 @@ import s from './ContentWrap.module.scss';
 
 import Firebase from '../../context/firebaseContext';
 import loginContext from '../../context/loginContext';
-import Row from '../Row'; // в Row был Index, а не index - нетлифай не собирал
+import Row from '../Row/Row'; // в Row был Index, а не index - нетлифай не собирал
 import { months, ALL_USERS_FROM_ALL_DEPARTMENTS_ID, rolesConfig } from '../../services/constants';
 import SelectList from '../SelectList';
 
