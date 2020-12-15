@@ -4,6 +4,8 @@ import Firebase from '../../context/firebaseContext';
 import cn from 'classnames';
 import s from './UserForm.module.scss'; 
 import SelectList from '../SelectList';
+import { rolesConfig } from '../../services/constants';
+import loginContext from '../../context/loginContext';
 
 const UserForm = (props) => {
 
@@ -20,6 +22,8 @@ const UserForm = (props) => {
   const [allDepartments, setAllDepartments] = useState([]);
   const [thisUserDepartmentId, setThisUserDepartmentId] = useState(0);
 
+  const { userData, allDepartmentsData, allUsersData, allVacationsData } = useContext(loginContext);
+
   useEffect(() => {
     getRolesRef()
       .once('value')
@@ -31,60 +35,65 @@ const UserForm = (props) => {
   useEffect(() => {
     if (id && allUsers.length > 0 && allUsersRole.length > 0) {
       if (id === 'new-user') {
-        const minRole = allUsersRole.find(item => +item.id === 900); // на самом деле здесь нужно найти минимальное значение поля права
+        const minRole = allUsersRole.find(item => +item.id === rolesConfig.defaultUser); // на самом деле здесь нужно найти минимальное значение поля права
         setThisUserRoleId(+minRole.id);
       } else {
         const user = allUsers.find(item => +item.id === +id);
         if (typeof user.role_id !== 'undefined') {
           setThisUserRoleId(+user.role_id);
         } else {
-          const minRole = allUsersRole.find(item => +item.id === 900); // на самом деле здесь нужно найти минимальное значение поля права
+          const minRole = allUsersRole.find(item => +item.id === rolesConfig.defaultUser); // на самом деле здесь нужно найти минимальное значение поля права
           setThisUserRoleId(+minRole.id);
         }
       }
     }
   }, [allUsers, allUsersRole]);
   useEffect(() => {
-    getUsersRef()
-      .once('value')
-      .then(response => response.val())
-      .then(res => {
-          setAllUsers(res);
-          return res;
-      })
-      // .then(res => {
-      //   if (id !== 'new-user') {
-      //     const user = res.find(item => +item.id === +id);
-      //     console.log(user, id)
-      //     setThisUserName(user.name);
-      //     setThisUserSurname(user.surname);
-      //     setThisUserLogin(user.login);
-      //     setThisUserRoleId(user.role_id);
-      //     setThisUserDepartmentId(+user.department_id);
-      //   } 
-      // })
-      .catch(e => console.log(e))
-      .finally(() => console.log('сходили за юзерами'));
-  }, [id]);
+    // getUsersRef()
+    //   .once('value')
+    //   .then(response => response.val())
+    //   .then(res => {
+    //       setAllUsers(res);
+    //       return res;
+    //   })
+    //   // .then(res => {
+    //   //   if (id !== 'new-user') {
+    //   //     const user = res.find(item => +item.id === +id);
+    //   //     console.log(user, id)
+    //   //     setThisUserName(user.name);
+    //   //     setThisUserSurname(user.surname);
+    //   //     setThisUserLogin(user.login);
+    //   //     setThisUserRoleId(user.role_id);
+    //   //     setThisUserDepartmentId(+user.department_id);
+    //   //   } 
+    //   // })
+    //   .catch(e => console.log(e))
+    //   .finally(() => console.log('сходили за юзерами'));
+
+    setAllUsers(allUsersData);
+  }, [allUsersData]);
   useEffect(() => {
-    getDepartmentsRef()
-      .once('value')
-      .then(response => response.val())
-      .then(res => {
-        setAllDepartments(res)
-        return res;
-      })
-      // .then(res => {
-      //   if (thisUserDepartmentId === 0 || thisUserDepartmentId === null) {
-      //     console.log(res[0].name)
-      //     setThisUserDepartmentId(res[0].id);
-      //   }
-      // })
-      .catch(e => console.log(e))
-      .finally(() => console.log('сходили за отделами'));
-  }, []);
+    // getDepartmentsRef()
+    //   .once('value')
+    //   .then(response => response.val())
+    //   .then(res => {
+    //     setAllDepartments(res)
+    //     return res;
+    //   })
+    //   // .then(res => {
+    //   //   if (thisUserDepartmentId === 0 || thisUserDepartmentId === null) {
+    //   //     console.log(res[0].name)
+    //   //     setThisUserDepartmentId(res[0].id);
+    //   //   }
+    //   // })
+    //   .catch(e => console.log(e))
+    //   .finally(() => console.log('сходили за отделами'));
+    const departments = allDepartmentsData.filter(item => +item.id !== 99999 && item.name !== 'Все');
+    setAllDepartments(departments);
+  }, [allDepartmentsData]);
   useEffect(() => {
-    if (id !== 'new-user' && allUsers.length > 0) {
+    console.log(allUsers, allDepartments, id)
+    if (id !== 'new-user' && allUsers.length > 0 && typeof id !== 'undefined') {
       const user = allUsers.find(item => +item.id === +id);
       setThisUserName(user.name);
       setThisUserSurname(user.surname);
@@ -94,7 +103,7 @@ const UserForm = (props) => {
     if (id === 'new-user' && allDepartments.length > 0) {
       setThisUserDepartmentId(+allDepartments[0].id);
     }
-  }, [id, allDepartments, allUsers]);
+  }, [allDepartments, allUsers]);
 
   const handleName = (event) => {
     setThisUserName(event.target.value);

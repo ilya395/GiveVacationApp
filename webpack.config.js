@@ -107,14 +107,14 @@ const plugins = () => {
             inject: true,
         }),
         new CleanWebpackPlugin(),
-        new CopyWebpackPlugin({
-            patterns: [
-                {
-                    from: path.resolve(__dirname, './src/assets/js/utils/*'),
-                    to: path.resolve(__dirname, './dist/')
-                },
-            ]
-        }),
+        // new CopyWebpackPlugin({
+        //     patterns: [
+        //         {
+        //             from: path.resolve(__dirname, './src/assets/js/utils/*'),
+        //             to: path.resolve(__dirname, './dist/')
+        //         },
+        //     ]
+        // }),
         new MiniCssExtractPlugin({
             filename: 'assets/css/' + filename('css') // filename('css') // 'assets/css/' + filename('css')
         }),

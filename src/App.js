@@ -22,28 +22,36 @@ function App() {
   const [allUsers, setAllUsers] = useState([]);
 
   useEffect(() => {
+    // getDepartmentsRef()
+    //   .once('value')
+    //   .then(response => response.val())
+    //   .then(res => setAllDepartments(res))
+    //   .catch(e => console.log(e))
+    //   .finally(() => console.log('сходили за отделами'));
+
     getDepartmentsRef()
-      .once('value')
-      .then(response => response.val())
-      .then(res => setAllDepartments(res))
-      .catch(e => console.log(e))
-      .finally(() => console.log('сходили за отделами'));
+      .on('value', res => {
+        setAllDepartments(res.val())
+      })
   }, []);
 
   useEffect(() => {
-    getVacationsRef()
-      .once('value')
-      .then(response => response.val())
-      .then(res => setAllVacations(res))
     // getVacationsRef()
-    //   .on('value', res => {
-    //     if (res.exists()) {
-    //       console.log(res)
-    //       setAllVacations( res.val() );
-    //     }
-    //   })
-      .catch(e => console.log(e))
-      .finally(() => console.log('сходили за отпусками'));
+    //   .once('value')
+    //   .then(response => response.val())
+    //   .then(res => setAllVacations(res))
+    // .catch(e => console.log(e))
+    // .finally(() => console.log('сходили за отпусками'));
+
+    try {
+      getVacationsRef()
+        .on('value', res => {
+          setAllVacations( res.val() );
+        });
+    } catch (error) {
+      console.log(error);
+    }
+
   }, []);
 
   useEffect(() => {
@@ -72,16 +80,24 @@ function App() {
           localStorage.setItem('userId', JSON.stringify(user.uid));
           setUserEmail(user.email);
 
+          // getUsersRef()
+          //   .once('value')
+          //   .then(response => response.val())
+          //   .then(res => {
+          //     setAllUsers(res);
+          //     const newUser = res.find(item => item.login === user.email);
+          //     setThisUserData(newUser);
+          //   })
+          //   .catch(e => console.log(e))
+          //   .finally(() => console.log('сходили за юзерами'));
+
           getUsersRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => {
-              setAllUsers(res);
-              const newUser = res.find(item => item.login === user.email);
-              setThisUserData(newUser);
+            .on('value', res => {
+              const result = res.val();
+              setAllUsers(result);
+              const newUser = result.find(item => item.login === user.email);
+              setThisUserData(newUser);              
             })
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за юзерами'));
 
         } else {
           setUserId(false);
