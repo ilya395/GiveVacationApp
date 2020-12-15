@@ -6,7 +6,7 @@ import DateCell from '../Date';
 
 import { months } from '../../services/constants';
 
-const Row = (props) => {
+const Row = (props) => { // ранее этот файл назывался не index.js, а Index.js
 
     const { name, id, vacations } = props;
     // console.log(vacations)
