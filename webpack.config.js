@@ -8,6 +8,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin') // работа�
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin') // минифицируй css
 const TerserWebpackPlugin = require('terser-webpack-plugin') // минифицируй js
 const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin') // через него прикрутить externals с массивом объектов, содержащих урлы с cdn библтотек
+const Dotenv = require('dotenv-webpack');
 
 const isDev = process.env.NODE_ENV === 'development' // определяй в каком сейчас режиме
 const isProd = !isDev                                //
@@ -118,6 +119,7 @@ const plugins = () => {
         new MiniCssExtractPlugin({
             filename: 'assets/css/' + filename('css') // filename('css') // 'assets/css/' + filename('css')
         }),
+        new Dotenv()
     ]
 
     return base 
