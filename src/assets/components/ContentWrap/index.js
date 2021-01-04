@@ -20,26 +20,14 @@ const ContentWrap = (props) => {
     const [thisYear, setThisYear] = useState(new Date().getFullYear());
     const { getUsersRef, getDepartmentsRef, getVacationsRef, getYearsRef } = useContext(Firebase);
 
-    const { userData, allUsersData, allVacationsData, allDepartmentsData } = useContext(loginContext);
+    const { userData, allUsersData, allVacationsData, allDepartmentsData, allYearsData } = useContext(loginContext);
     const [roleId, setRoleId] = useState(rolesConfig.defaultUser); 
     const [departsmentForThisRole, setDepartmentForThisRole] = useState(0);
 
     useEffect(() => {
-        getYearsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllYears(res))
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за годами'));        
-    }, []);
+        setAllYears(allYearsData);        
+    }, [allYearsData]);
     useEffect(() => {
-        // getUsersRef()
-        //     .once('value')
-        //     .then(response => response.val())
-        //     .then(res => setAllUsers(res))
-        //     .catch(e => console.log(e))
-        //     .finally(() => console.log('сходили за юзерами', allUsers));  
-            
         setAllUsers(allUsersData);
     }, [allUsersData]);
     // useEffect(() => {

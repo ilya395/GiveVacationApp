@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useReducer } from 'react';
 import './App.scss';
 
 import useRoutes from './assets/routes/routes';
@@ -7,46 +7,58 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import Firebase from './assets/context/firebaseContext';
 import Preloader from './assets/components/Preloader/Preloader';
 import LoginContext from './assets/context/loginContext';
+import defaultReducer, { initialState } from './assets/store/reducers/reducer';
 
 function App() {
 
-  const { auth, getUsersRef, getDepartmentsRef, getVacationsRef } = useContext(Firebase);
+  const { auth, getUsersRef, getDepartmentsRef, getVacationsRef, getYearsRef } = useContext(Firebase);
+
+  const [state, dispatch] = useReducer(defaultReducer, initialState);
 
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [thisUserData, setThisUserData] = useState(null);
 
-  const [allDepartments, setAllDepartments] = useState([]);
-  const [allVacations, setAllVacations] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
+  const updateYears = () => {
+    getYearsRef()
+      .once('value')
+      .then(response => response.val())
+      .then(res => {
+        dispatch({
+          type: 'ADD_ALL_YEARS',
+          payload: res,
+        });
+      })
+      .catch(e => console.log(e))
+      .finally(() => console.log('сходили за годами')); 
+  }
 
   useEffect(() => {
-    // getDepartmentsRef()
-    //   .once('value')
-    //   .then(response => response.val())
-    //   .then(res => setAllDepartments(res))
-    //   .catch(e => console.log(e))
-    //   .finally(() => console.log('сходили за отделами'));
-
-    getDepartmentsRef()
-      .on('value', res => {
-        setAllDepartments(res.val())
-      })
+    updateYears();   
   }, []);
 
   useEffect(() => {
-    // getVacationsRef()
-    //   .once('value')
-    //   .then(response => response.val())
-    //   .then(res => setAllVacations(res))
-    // .catch(e => console.log(e))
-    // .finally(() => console.log('сходили за отпусками'));
+
+    getDepartmentsRef()
+      .on('value', res => {
+        dispatch({
+          type: 'ADD_ALL_DEPARTMENTS',
+          payload: res.val(),
+        });
+      })
+
+  }, []);
+
+  useEffect(() => {
 
     try {
       getVacationsRef()
         .on('value', res => {
-          setAllVacations( res.val() );
+          dispatch({
+            type: 'ADD_ALL_VACATIONS',
+            payload: res.val(),
+          });
         });
     } catch (error) {
       console.log(error);
@@ -80,21 +92,14 @@ function App() {
           localStorage.setItem('userId', JSON.stringify(user.uid));
           setUserEmail(user.email);
 
-          // getUsersRef()
-          //   .once('value')
-          //   .then(response => response.val())
-          //   .then(res => {
-          //     setAllUsers(res);
-          //     const newUser = res.find(item => item.login === user.email);
-          //     setThisUserData(newUser);
-          //   })
-          //   .catch(e => console.log(e))
-          //   .finally(() => console.log('сходили за юзерами'));
-
           getUsersRef()
             .on('value', res => {
               const result = res.val();
-              setAllUsers(result);
+              // setAllUsers(result);
+              dispatch({
+                type: 'ADD_ALL_USERS',
+                payload: result,
+              });
               const newUser = result.find(item => item.login === user.email);
               setThisUserData(newUser);              
             })
@@ -121,7 +126,18 @@ function App() {
     <>
       <Router>
         <LoginContext.Provider
-          value={{login: userEmail, userData: thisUserData, allDepartmentsData: allDepartments, allUsersData: allUsers, allVacationsData: allVacations}}
+          value={
+            {
+              login: userEmail, 
+              userData: thisUserData, 
+              allDepartmentsData: state.allDepartments,
+              allUsersData: state.allUsers, 
+              allVacationsData: state.allVacations,
+              allYearsData: state.allYears,
+              dispatch,
+              updateYears
+            }
+          }
         >
           {routes}
         </LoginContext.Provider>

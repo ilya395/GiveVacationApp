@@ -33,4 +33,6 @@ class Firebase {
     requestRef = (str) => this.database.ref(str);
 }
 
-export default Firebase;
+const InstanseFirebase = new Firebase();
+
+export default InstanseFirebase;

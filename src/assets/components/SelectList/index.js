@@ -25,11 +25,13 @@ const SelectList = (props) => {
                 onChange={chooseId}
                 className={cn(s['select-element'])}
             >
-                {data.map((item) => {
+                {data ? data.map((item) => {
                     return (
                         <option key={item.id} value={+item.id}>{item.name}</option>
                     );
-                })}
+                }) : (
+                    <option>Загружаем года ...</option>
+                )}
             </select>
         </>
     );

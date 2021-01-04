@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import cn from 'classnames';
 import s from './VacationList.module.scss';
 
-import Firebase from '../../context/firebaseContext';
 import { Link } from 'react-router-dom';
 import SelectList from '../SelectList';
 
@@ -11,52 +10,18 @@ import { rolesConfig, ALL_USERS_FROM_ALL_DEPARTMENTS_ID } from '../../services/c
 
 const VacationList = (props) => {
 
-    const { login, userData, allDepartmentsData, allUsersData, allVacationsData } =  useContext(loginContext);
+    const { login, userData, allDepartmentsData, allUsersData: allUsers, allVacationsData, dispatch, allYearsData: allYears, updateYears } =  useContext(loginContext);
 
-    console.log(login);
-
-    const [allYears, setAllYears] = useState([]);
     const [thisYear, setThisYear] = useState(new Date().getFullYear());
-    const [allUsers, setAllUsers] = useState([]);
     const [allDepartments, setAllDepartments] = useState([]);
     const [thisDepartmentId, setThisDepartmentId] = useState(0);
     const [allVacations, setAllVacations] = useState([]);
     const [choosedVacations, setChoosedVacations] = useState([]);
 
-    const { getUsersRef, getDepartmentsRef, getVacationsRef, getYearsRef } = useContext(Firebase);
-
     useEffect(() => {
-        getYearsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllYears(res))
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за годами'));        
-    }, []);
-    useEffect(() => {
-        // getUsersRef()
-        //     .once('value')
-        //     .then(response => response.val())
-        //     .then(res => setAllUsers(res))
-        //     .catch(e => console.log(e))
-        //     .finally(() => console.log('сходили за юзерами'));
-
-        setAllUsers(allUsersData)
-    }, [allUsersData]);
-    useEffect(() => {
-        // getDepartmentsRef()
-        //     .once('value')
-        //     .then(response => response.val())
-        //     .then(res => {
-        //         setAllDepartments(res);
-        //         setThisDepartmentId(+res[0].id);
-        //     })
-        //     .catch(e => console.log(e))
-        //     .finally(() => console.log('сходили за отделами'));
 
         if (+userData.role_id === rolesConfig.simpleUser) {
             const departaments = allDepartmentsData.filter(item => +item.id === +userData.department_id)
-
             setAllDepartments(departaments);
             setThisDepartmentId(+departaments[0].id);
         } else {
@@ -66,12 +31,6 @@ const VacationList = (props) => {
 
     }, [allDepartmentsData, userData]);
     useEffect(() => {
-        // getVacationsRef()
-        //     .once('value')
-        //     .then(response => response.val())
-        //     .then(res => setAllVacations(res))
-        //     .catch(e => console.log(e))
-        //     .finally(() => console.log('сходили за отпусками'));
 
         if (+userData.role_id === rolesConfig.simpleUser) {
             const vacations = allVacationsData.filter(item => +item.user_id === +userData.id);
@@ -91,10 +50,10 @@ const VacationList = (props) => {
 
     const deleteVacation = (id) => {
         console.log('delete', id)
-        const arr = [];
-        const result = allVacations.filter(item => +item.id !== +id);
-        setAllVacations(result);
-        getVacationsRef().set(result);
+        dispatch({
+            type: 'DELETE_THIS_VACATION',
+            payload: +id,
+        });
     }
 
     const chooseDepartment = (id) => {
