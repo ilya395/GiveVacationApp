@@ -8,16 +8,17 @@ import SelectList from '../SelectList';
 
 import loginContext from '../../context/loginContext';
 import { rolesConfig, ALL_USERS_FROM_ALL_DEPARTMENTS_ID } from '../../services/constants'
+import { useDispatch, useSelector } from 'react-redux';
 
 const VacationList = (props) => {
 
-    const { login, userData, allDepartmentsData, allUsersData, allVacationsData } =  useContext(loginContext);
+    const { login, userData, allUsersData, } =  useContext(loginContext);
 
-    console.log(login);
+    // console.log(login);
 
-    const [allYears, setAllYears] = useState([]);
+    // const [allYears, setAllYears] = useState(allYearsData);
     const [thisYear, setThisYear] = useState(new Date().getFullYear());
-    const [allUsers, setAllUsers] = useState([]);
+    // const [allUsers, setAllUsers] = useState([]);
     const [allDepartments, setAllDepartments] = useState([]);
     const [thisDepartmentId, setThisDepartmentId] = useState(0);
     const [allVacations, setAllVacations] = useState([]);
@@ -25,35 +26,14 @@ const VacationList = (props) => {
 
     const { getUsersRef, getDepartmentsRef, getVacationsRef, getYearsRef } = useContext(Firebase);
 
-    useEffect(() => {
-        getYearsRef()
-            .once('value')
-            .then(response => response.val())
-            .then(res => setAllYears(res))
-            .catch(e => console.log(e))
-            .finally(() => console.log('сходили за годами'));        
-    }, []);
-    useEffect(() => {
-        // getUsersRef()
-        //     .once('value')
-        //     .then(response => response.val())
-        //     .then(res => setAllUsers(res))
-        //     .catch(e => console.log(e))
-        //     .finally(() => console.log('сходили за юзерами'));
+    const dispatch = useDispatch();
+    const allUsers = useSelector(state => state.allUsers);
+    const allYears = useSelector(state => state.allYears);
 
-        setAllUsers(allUsersData)
-    }, [allUsersData]);
+    const allDepartmentsData = useSelector(state => state.allDepartments);
+    const allVacationsData = useSelector(state => state.allVacations);
+    
     useEffect(() => {
-        // getDepartmentsRef()
-        //     .once('value')
-        //     .then(response => response.val())
-        //     .then(res => {
-        //         setAllDepartments(res);
-        //         setThisDepartmentId(+res[0].id);
-        //     })
-        //     .catch(e => console.log(e))
-        //     .finally(() => console.log('сходили за отделами'));
-
         if (+userData.role_id === rolesConfig.simpleUser) {
             const departaments = allDepartmentsData.filter(item => +item.id === +userData.department_id)
 
@@ -63,23 +43,15 @@ const VacationList = (props) => {
             setAllDepartments(allDepartmentsData);
             setThisDepartmentId(+allDepartmentsData[0].id);            
         }
-
     }, [allDepartmentsData, userData]);
-    useEffect(() => {
-        // getVacationsRef()
-        //     .once('value')
-        //     .then(response => response.val())
-        //     .then(res => setAllVacations(res))
-        //     .catch(e => console.log(e))
-        //     .finally(() => console.log('сходили за отпусками'));
 
+    useEffect(() => {
         if (+userData.role_id === rolesConfig.simpleUser) {
             const vacations = allVacationsData.filter(item => +item.user_id === +userData.id);
             setAllVacations(vacations);
         } else {
             setAllVacations(allVacationsData);
         }
-
     }, [allVacationsData, userData]);
 
     useEffect(() => {
@@ -89,12 +61,19 @@ const VacationList = (props) => {
         setChoosedVacations(result);
     }, [allUsers, allVacations, thisYear, thisDepartmentId]);
 
+    useEffect(() => {
+        console.log(allVacations, allVacationsData);
+    });
+
     const deleteVacation = (id) => {
-        console.log('delete', id)
-        const arr = [];
-        const result = allVacations.filter(item => +item.id !== +id);
-        setAllVacations(result);
-        getVacationsRef().set(result);
+        // const result = allVacations.filter(item => +item.id !== +id);
+        // setAllVacations(result);
+        // getVacationsRef().set(result);
+
+        dispatch({
+            type: 'DELETE_THIS_VACATION',
+            payload: +id,
+        });
     }
 
     const chooseDepartment = (id) => {

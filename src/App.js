@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import './App.scss';
 
 import useRoutes from './assets/routes/routes';
@@ -10,48 +11,48 @@ import LoginContext from './assets/context/loginContext';
 
 function App() {
 
-  const { auth, getUsersRef, getDepartmentsRef, getVacationsRef } = useContext(Firebase);
+  const { auth, getUsersRef, getDepartmentsRef, getVacationsRef, getYearsRef } = useContext(Firebase);
 
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [thisUserData, setThisUserData] = useState(null);
 
-  const [allDepartments, setAllDepartments] = useState([]);
-  const [allVacations, setAllVacations] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
+  const allDepartments = useSelector(state => state.allDepartments);
+  const allVacations = useSelector(state => state.allVacations);
+  const allUsers = useSelector(state => state.allUsers);
+  const allYears = useSelector(state => state.allYears);
+
+  // const [allDepartments, setAllDepartments] = useState([]);
+  // const [allVacations, setAllVacations] = useState([]);
+  // const [allUsers, setAllUsers] = useState([]);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // getDepartmentsRef()
-    //   .once('value')
-    //   .then(response => response.val())
-    //   .then(res => setAllDepartments(res))
-    //   .catch(e => console.log(e))
-    //   .finally(() => console.log('сходили за отделами'));
-
     getDepartmentsRef()
       .on('value', res => {
-        setAllDepartments(res.val())
+        dispatch({
+          type: 'ADD_ALL_DEPARTMENTS',
+          payload: res.val(),
+        });
+        // setAllDepartments(res.val())
       })
   }, []);
 
   useEffect(() => {
-    // getVacationsRef()
-    //   .once('value')
-    //   .then(response => response.val())
-    //   .then(res => setAllVacations(res))
-    // .catch(e => console.log(e))
-    // .finally(() => console.log('сходили за отпусками'));
-
     try {
       getVacationsRef()
         .on('value', res => {
-          setAllVacations( res.val() );
+          dispatch({
+            type: 'ADD_ALL_VACATIONS',
+            payload: res.val(),
+          });
+          // setAllVacations( res.val() );
         });
     } catch (error) {
       console.log(error);
     }
-
   }, []);
 
   useEffect(() => {
@@ -80,23 +81,16 @@ function App() {
           localStorage.setItem('userId', JSON.stringify(user.uid));
           setUserEmail(user.email);
 
-          // getUsersRef()
-          //   .once('value')
-          //   .then(response => response.val())
-          //   .then(res => {
-          //     setAllUsers(res);
-          //     const newUser = res.find(item => item.login === user.email);
-          //     setThisUserData(newUser);
-          //   })
-          //   .catch(e => console.log(e))
-          //   .finally(() => console.log('сходили за юзерами'));
-
           getUsersRef()
             .on('value', res => {
               const result = res.val();
-              setAllUsers(result);
+              // setAllUsers(result);
+              dispatch({
+                type: 'ADD_ALL_USERS',
+                payload: result,
+              });
               const newUser = result.find(item => item.login === user.email);
-              setThisUserData(newUser);              
+              setThisUserData(newUser);          
             })
 
         } else {
@@ -108,6 +102,15 @@ function App() {
     }
     
   }, []); 
+
+  useEffect(() => {
+    getYearsRef()
+      .once('value')
+      .then(response => response.val())
+      .then(res => dispatch({ type: 'ADD_ALL_YEARS', payload: res }))
+      .catch(e => console.log(e))
+      .finally(() => console.log('сходили за годами'));
+  }, []);
   
   const routes = useRoutes({login: userEmail, userData: thisUserData});
 
@@ -121,7 +124,7 @@ function App() {
     <>
       <Router>
         <LoginContext.Provider
-          value={{login: userEmail, userData: thisUserData, allDepartmentsData: allDepartments, allUsersData: allUsers, allVacationsData: allVacations}}
+          value={{login: userEmail, userData: thisUserData, allDepartmentsData: allDepartments, allUsersData: allUsers, allVacationsData: allVacations, allYearsData: allYears}}
         >
           {routes}
         </LoginContext.Provider>

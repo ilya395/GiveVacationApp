@@ -5,13 +5,18 @@ import App from './App';
 import './assets/sass/style.scss';
 
 import FirebaseContext from './assets/context/firebaseContext';
-import Firebase from './assets/services/firebase';
+import InstanseFirebase from './assets/services/firebase';
+
+import { Provider } from 'react-redux';
+import store from './assets/store/store';
 
 ReactDOM.render(
   <FirebaseContext.Provider
-    value={new Firebase()}
+    value={InstanseFirebase}
   >
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </FirebaseContext.Provider>,
   document.getElementById('root')
 );
