@@ -6,15 +6,26 @@ import routesConfig from '../../routes/manageToRoutes';
 import loginContext from '../../context/loginContext';
 import { rolesConfig } from '../../services/constants';
 
-const MenuWrap = () => {
-  const { login, userData } = useContext(loginContext);
-  console.log(useContext(loginContext))
+import { connect } from 'react-redux';
+
+const MenuWrap = (props) => {
+  // const { login, userData } = useContext(loginContext);
+  console.log('#context: ',useContext(loginContext));
+  console.log('#props: ', props);
+  const { thisUser } = props;
   const [roleId, setRoleId] = useState(rolesConfig.defaultUser);
+
+  // useEffect(() => {
+  //   if (userData) {
+  //     setRoleId(userData.role_id);
+  //   }
+  // }, [userData]);
+
   useEffect(() => {
-    if (userData) {
-      setRoleId(userData.role_id);
+    if (thisUser) {
+      setRoleId(thisUser.role_id);
     }
-  }, [userData]);
+  }, [thisUser]);
 
   return (
       <>
@@ -61,4 +72,11 @@ const MenuWrap = () => {
   );
 }
 
-export default MenuWrap;
+const mapStateToProps = (state) => {
+  console.log('#state from redux',state)
+  return {
+    ...state,
+  }
+}
+
+export default connect(mapStateToProps)(MenuWrap);

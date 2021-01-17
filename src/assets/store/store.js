@@ -46,6 +46,11 @@ function defaultReducer(state = initialState, action) {
             instansWithAllYears.allYears = action.payload;
             return instansWithAllYears;
 
+        case ('ADD_THIS_USER'):
+            const instansWithThisUser = {...state};
+            instansWithThisUser.thisUser = action.payload;
+            return instansWithThisUser;        
+
         default:
             return state;
     }

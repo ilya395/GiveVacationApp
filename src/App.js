@@ -9,7 +9,13 @@ import Firebase from './assets/context/firebaseContext';
 import Preloader from './assets/components/Preloader/Preloader';
 import LoginContext from './assets/context/loginContext';
 
-function App() {
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+function App(props) {
+
+  // console.log('GLOBAL PARAMS: ', props);
+  const { userDataNewFits } =  props;
 
   const { auth, getUsersRef, getDepartmentsRef, getVacationsRef, getYearsRef } = useContext(Firebase);
 
@@ -90,7 +96,10 @@ function App() {
                 payload: result,
               });
               const newUser = result.find(item => item.login === user.email);
-              setThisUserData(newUser);          
+
+              setThisUserData(newUser); 
+
+              userDataNewFits(newUser);     
             })
 
         } else {
@@ -133,4 +142,21 @@ function App() {
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    ...state
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({
+    userDataNewFits: (param) => {
+      return {
+        type: 'ADD_THIS_USER',
+        payload: param
+      }
+    },
+  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
