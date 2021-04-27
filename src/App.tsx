@@ -12,7 +12,21 @@ import LoginContext from './assets/context/loginContext';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-function App(props) {
+type StateProps = {
+  allDepartments: Array<{}>
+  allVacations: Array<{}>
+  allUsers: Array<{}>
+  allYears: Array<{}>
+}
+
+type PropsType = {
+  userDataNewFits: (param: {}) => {
+    type: string
+    payload: typeof param
+  } 
+}
+
+function App(props: PropsType) {
 
   // console.log('GLOBAL PARAMS: ', props);
   const { userDataNewFits } =  props;
@@ -24,10 +38,10 @@ function App(props) {
   const [userEmail, setUserEmail] = useState('');
   const [thisUserData, setThisUserData] = useState(null);
 
-  const allDepartments = useSelector(state => state.allDepartments);
-  const allVacations = useSelector(state => state.allVacations);
-  const allUsers = useSelector(state => state.allUsers);
-  const allYears = useSelector(state => state.allYears);
+  const allDepartments = useSelector((state:StateProps) => state.allDepartments);
+  const allVacations = useSelector((state:StateProps) => state.allVacations);
+  const allUsers = useSelector((state:StateProps) => state.allUsers);
+  const allYears = useSelector((state:StateProps) => state.allYears);
 
   // const [allDepartments, setAllDepartments] = useState([]);
   // const [allVacations, setAllVacations] = useState([]);

@@ -43,7 +43,6 @@ const cssLoaders  = (extra) => {
             },
         }, 
         'css-loader',
-        // 'postcss-loader',
         {
             loader: 'postcss-loader',
             options: {
@@ -73,7 +72,11 @@ const babelOptions = (preset) => {
         // presets: [
         //     '@babel/preset-env',
         // ],
-        presets: ["@babel/preset-env", "@babel/preset-react"],
+        presets: [
+            "@babel/typescript",
+            "@babel/preset-env", 
+            "@babel/preset-react"
+        ],
         plugins: [
             '@babel/plugin-proposal-class-properties'
         ]
@@ -130,7 +133,7 @@ module.exports = {
     context: path.resolve(__dirname, 'src'), // со всех путях  удаляю эту папку
     mode: 'development',
     entry: { // точка входа в приложение, откуда начать
-        script: ['@babel/polyfill', './index.js'],
+        script: ['@babel/polyfill', './index.tsx'],
         // style: './assets/sass/style.scss',
         // 'assets/js/index': ['@babel/polyfill', './assets/js/index.js'],
         // 'assets/css/style': './assets/sass/style.scss'
@@ -142,7 +145,7 @@ module.exports = {
     },
     resolve: {
         extensions: [ // какие расширения нужно понимать по умолчанию
-            '.js', '.json', '.png'
+            '.js', '.json', '.png', '.ts', '.tsx'
         ],
        alias: { // путь до корня проекта
            '@assets': path.resolve(__dirname, 'src/assets'),
@@ -164,6 +167,11 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.(ts|tsx)$/, // /\.[tj]sx?$/,
+                exclude: /node_modules/,
+                use: jsLoaders(),
+            },
+            {
                 test: /\.css$/,
                 use: cssLoaders() 
             },
@@ -171,6 +179,26 @@ module.exports = {
                 test: /\.s[ac]ss$/,
                 use: cssLoaders('sass-loader')
             },
+            // {
+            //     test: /\.scss$/,
+            //     use: [
+            //         'style-loader',
+            //         // 'css-loader'
+            //         'css-modules-typescript-loader?modules',
+            //         {
+            //             loader: 'css-loader',
+            //             options: {
+            //                 modules: {
+            //                     // css модули
+            //                     mode: 'local',
+            //                     localIdentName: '[name]__[local]__[hash:base64:5]', //
+            //                     auto: /\.module\.\w+$/i, // использование модулей
+            //                 },
+            //             },
+            //         },
+            //         'sass-loader',
+            //     ],
+            // },
             {
                 test: /\.(png|jpg|jpeg|svg|gif)$/,
                 use: [
