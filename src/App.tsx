@@ -12,6 +12,8 @@ import LoginContext from './assets/context/loginContext';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import { FirebaseContextType } from './assets/context/firebaseContext';
+
 type StateProps = {
   allDepartments: Array<{}>
   allVacations: Array<{}>
@@ -26,7 +28,7 @@ type PropsType = {
   } 
 }
 
-function App(props: PropsType) {
+const App: React.FC<PropsType> = (props) => {
 
   // console.log('GLOBAL PARAMS: ', props);
   const { userDataNewFits } =  props;
@@ -51,7 +53,7 @@ function App(props: PropsType) {
 
   useEffect(() => {
     getDepartmentsRef()
-      .on('value', res => {
+      .on('value', (res: any) => { // ?
         dispatch({
           type: 'ADD_ALL_DEPARTMENTS',
           payload: res.val(),
@@ -63,7 +65,7 @@ function App(props: PropsType) {
   useEffect(() => {
     try {
       getVacationsRef()
-        .on('value', res => {
+        .on('value', (res: any) => { // ?
           dispatch({
             type: 'ADD_ALL_VACATIONS',
             payload: res.val(),
@@ -102,14 +104,14 @@ function App(props: PropsType) {
           setUserEmail(user.email);
 
           getUsersRef()
-            .on('value', res => {
+            .on('value', (res: any) => {
               const result = res.val();
               // setAllUsers(result);
               dispatch({
                 type: 'ADD_ALL_USERS',
                 payload: result,
               });
-              const newUser = result.find(item => item.login === user.email);
+              const newUser = result.find((item: {login: string}) => item.login === user.email);
 
               setThisUserData(newUser); 
 
@@ -147,7 +149,16 @@ function App(props: PropsType) {
     <>
       <Router>
         <LoginContext.Provider
-          value={{login: userEmail, userData: thisUserData, allDepartmentsData: allDepartments, allUsersData: allUsers, allVacationsData: allVacations, allYearsData: allYears}}
+          value={
+            {
+              login: userEmail, 
+              userData: thisUserData, 
+              allDepartmentsData: allDepartments, 
+              allUsersData: allUsers, 
+              allVacationsData: allVacations, 
+              allYearsData: allYears
+            }
+          }
         >
           {routes}
         </LoginContext.Provider>

@@ -5,17 +5,25 @@ import { Layout, Typography} from 'antd';
 
 import LogoutButton from '../../components/LogoutButton/LogoutButton';
 
-import Firebase from '../../context/firebaseContext';
+import FirebaseContext from '../../context/firebaseContext';
 
 import MenuWrap from '../../components/MenuWrap';
+
+import { History } from 'history';
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
 
-const MainLayout = ({children, ...props}) => {
+type PropsType = {
+  children: React.Component
+  history: History
+  props: {}
+}
 
-  const { auth } = useContext(Firebase);
-  const { history } = props;
+const MainLayout: React.FC<PropsType> = ({children, history, ...props}) => {
+
+  const { auth }: any = useContext(FirebaseContext); // ?
+  // const { history } = props;
 
   const logoutPlz = () => {
     console.log('ок, logout');

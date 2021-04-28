@@ -10,9 +10,9 @@ import loginContext from '../../context/loginContext';
 import { rolesConfig, ALL_USERS_FROM_ALL_DEPARTMENTS_ID } from '../../services/constants'
 import { useDispatch, useSelector } from 'react-redux';
 
-const VacationList = (props) => {
+const VacationList = () => {
 
-    const { login, userData, allUsersData, } =  useContext(loginContext);
+    const { userData } =  useContext(loginContext);
 
     // console.log(login);
 
@@ -70,10 +70,12 @@ const VacationList = (props) => {
         // setAllVacations(result);
         // getVacationsRef().set(result);
 
-        dispatch({
-            type: 'DELETE_THIS_VACATION',
-            payload: +id,
-        });
+        // dispatch({
+        //     type: 'DELETE_THIS_VACATION',
+        //     payload: +id,
+        // });
+
+        dispatch(deleteVacation(+id));
     }
 
     const chooseDepartment = (id) => {

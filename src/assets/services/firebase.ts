@@ -13,6 +13,9 @@ const firebaseConfig = {
 };
 
 class Firebase {
+    auth: firebase.auth.Auth;
+    database: firebase.database.Database;
+    userUid: null;
     constructor() {
         firebase.initializeApp(firebaseConfig); // инициализируем firebase с конфигом
 
@@ -21,7 +24,7 @@ class Firebase {
         this.userUid = null;
     }
 
-    signWithEmail = (email, password) => this.auth.signInWithEmailAndPassword(email, password);
+    signWithEmail = (email: string, password: string) => this.auth.signInWithEmailAndPassword(email, password);
 
     // методы для работы с бд
     getRolesRef = () => this.database.ref('/roles/');
@@ -30,7 +33,7 @@ class Firebase {
     getUsersRef = () => this.database.ref('/users/');
     getVacationsRef = () => this.database.ref('/vacations/');
 
-    requestRef = (str) => this.database.ref(str);
+    requestRef = (str: string) => this.database.ref(str);
 }
 
 const InstanseFirebase = new Firebase();

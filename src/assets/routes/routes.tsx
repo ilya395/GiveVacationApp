@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout/MainLayout';
 import AuthLayout from '../layouts/AuthLayout/AuthLayout';
 
@@ -15,9 +15,16 @@ import UserForm from '../components/UserForm';
 // import loginContext from '../context/loginContext';
 import { rolesConfig } from '../services/constants';
 
-const useRoutes = (props) => {
+type PropsType = {
+    userData: {
+        role_id: string | number
+        login: string
+    }
+}
 
-    const { login, userData } = props;
+const useRoutes: React.FC<PropsType> = ({ userData }) => {
+
+    // const { login, userData } = props;
     // console.log(props);
 
     const [roleId, setRoleId] = useState(+rolesConfig.defaultUser);

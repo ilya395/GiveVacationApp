@@ -1,10 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 
+import { History } from 'history';
+
 import './AuthLayout.scss';
 
 import { Form, Input, Button } from 'antd';
 import FirebaseContext from '../../context/firebaseContext';
 import Preloader from '../../components/Preloader/Preloader';
+
+// import { Store, ValidateErrorEntity } from 'antd/lib/form/interface'; // "antd/lib/form/interface"
 
 const layout = {
     labelCol: {
@@ -21,25 +25,34 @@ const tailLayout = {
     },
 };
 
-const AuthLayout = (props) => {
+type PropsType = {
+    history: History
+}
+
+type onFinishType = {
+    email: string
+    password: string
+}
+
+const AuthLayout: React.FC<PropsType> = ({history, ...props}) => {
 
     // console.log('#### props in Auth: ', props, props.history);
 
     const [loading, setLoading] = useState(true);
     useEffect(() => setLoading(false), []);
 
-    const [history, setHistory] = useState(null);
-    useEffect(() => {
-        const { history } = props;
-        setHistory(history);
-    }, [props]);
+    // const [history, setHistory] = useState(null);
+    // useEffect(() => {
+    //     const { history } = props;
+    //     setHistory(history);
+    // }, [props]);
 
     const [authOk, setAuthOk] = useState(false);
 
     // let localUserData = localStorage.getItem('userId');
     // const [localData, setLocalData] = useState(localUserData);
 
-    const { signWithEmail } = useContext(FirebaseContext);
+    const { signWithEmail }: any = useContext(FirebaseContext); // ?
     // const { history } = props; // useContext(RoutesContext);
     
     useEffect(() => {
@@ -50,14 +63,14 @@ const AuthLayout = (props) => {
         }
     }, [authOk, history]);
 
-    const onFinish = values => {
+    const onFinish = <T, >(values: onFinishType): Promise<T> => {
 
     //   const { history } = props;
 
-      
       const {email, password} = values;
-      signWithEmail(email, password)
-        .then(res => {
+
+      return signWithEmail(email, password)
+        .then((res: {user:{uid:string}}) => {
             console.log('Success!');
             // console.log(res, values);
             setAuthOk(true);
@@ -73,7 +86,7 @@ const AuthLayout = (props) => {
         });
     };
     
-    const onFinishFailed = errorInfo => {
+    const onFinishFailed = (errorInfo: any) => { // ? // ValidateErrorEntity 
       console.log('Failed:', errorInfo);
     };
 
